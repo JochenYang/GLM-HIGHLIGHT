@@ -50,7 +50,7 @@
 
 ## 开发说明
 
-1、Currently, multi-language is not supported, only Chinese is supported
+1、目前不支持多语言，仅支持中文
 
 ### 项目结构
 
