@@ -52,12 +52,14 @@ A powerful Chrome extension for webpage text highlighting management. Supporting
 
 ### Project Structure
 
+```
 GLM-HIGHLIGHTER
-├── manifest.json # 扩展配置文件
+├── manifest.json          # Extension configuration
 ├── js/
-│ ├── background.js # Background service
-│ ├── content-action.js # Content script
-│ ├── highlighter.js # Core highlighting implementation
-│ └── utils.js # Utility functions
-├── popup/ # Popup window
-└── locales/ # i18n resources
+│   ├── background.js     # Background service
+│   ├── content-action.js # Content script
+│   ├── highlighter.js    # Core highlighting implementation
+│   └── utils.js         # Utility functions
+├── popup/                # Popup window
+└── locales/             # i18n resources
+```

@@ -52,6 +52,7 @@
 
 ### 项目结构
 
+```
 GLM-HIGHLIGHTER
 ├── manifest.json # 扩展配置文件
 ├── js/
@@ -61,6 +62,7 @@ GLM-HIGHLIGHTER
 │ └── utils.js # 工具函数
 ├── popup/ # 弹出窗口相关
 └── locales/ # 国际化资源
+```
 
 ### 本地开发
 
