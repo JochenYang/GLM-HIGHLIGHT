@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>关键词管理</title>
+    <link rel="stylesheet" href="css/element-plus.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 24px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            color: #2c3e50;
+            min-width: 800px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px 0 rgba(0,0,0,0.05);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin: 0;
+        }
+
+        .stats {
+            display: flex;
+            gap: 16px;
+            color: #606266;
+            font-size: 14px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-value {
+            color: #409eff;
+            font-weight: 500;
+        }
+
+        .search-box {
+            position: relative;
+            width: 280px;
+            background: white;
+        }
+
+        .search-box input {
+            width: 100%;
+            height: 36px;
+            padding: 0 16px 0 36px;
+            border: 1px solid #dcdfe6;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: white;
+            box-sizing: border-box;
+        }
+
+        .search-box input:focus {
+            border-color: #409eff;
+            box-shadow: 0 0 0 2px rgba(64,158,255,0.2);
+            background: white;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #909399;
+            pointer-events: none;
+            font-size: 14px;
+        }
+
+        .keyword-list {
+            display: grid;
+            gap: 16px;
+        }
+
+        .keyword-category {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px 0 rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 24px;
+            background: #f8f9fb;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .category-header:hover {
+            background: #f0f2f5;
+        }
+
+        .category-header.collapsed {
+            border-bottom: none;
+        }
+
+        .category-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .category-name {
+            font-size: 16px;
+            font-weight: 500;
+            color: #1a1a1a;
+        }
+
+        .category-count {
+            font-size: 13px;
+            color: #909399;
+            background: #f4f4f5;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .category-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .category-content {
+            padding: 16px 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .keyword-item {
+            display: block;
+            margin-bottom: 16px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px 0 rgba(0,0,0,0.05);
+        }
+
+        .keyword-item-row {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .keyword-item-row:hover {
+            background: #f0f2f5;
+        }
+
+        .keyword-text {
+            font-size: 14px;
+            color: #606266;
+        }
+
+        .keyword-delete {
+            padding: 2px 4px;
+            margin-left: 4px;
+            border: none;
+            background: none;
+            color: #f56c6c;
+            cursor: pointer;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .keyword-item-row:hover .keyword-delete {
+            opacity: 1;
+        }
+
+        .category-delete {
+            padding: 6px 12px;
+            border: 1px solid #dcdfe6;
+            background: white;
+            color: #606266;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .category-delete:hover {
+            color: #f56c6c;
+            border-color: #f56c6c;
+            background: #fef0f0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 48px 0;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px 0 rgba(0,0,0,0.05);
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: #909399;
+        }
+
+        .empty-text {
+            font-size: 14px;
+            color: #909399;
+        }
+
+        .notification {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            z-index: 9999;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .notification-success {
+            background: #f0f9eb;
+            color: #67c23a;
+            border: 1px solid #e1f3d8;
+        }
+
+        .notification-error {
+            background: #fef0f0;
+            color: #f56c6c;
+            border: 1px solid #fde2e2;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <h1 class="title">关键词管理</h1>
+            <div class="stats">
+                <div class="stat-item">
+                    <span>总词数</span>
+                    <span class="stat-value" id="totalCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>分类数</span>
+                    <span class="stat-value" id="categoryCount">0</span>
+                </div>
+            </div>
+        </div>
+        <div class="search-box">
+            <input type="text" placeholder="搜索关键词..." id="searchInput">
+            <span class="search-icon">🔍</span>
+        </div>
+    </div>
+
+    <div class="keyword-list" id="keywordList">
+        <!-- 关键词列表通过 JS 动态生成 -->
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/jquery.js"></script>
+    <script src="js/manage.js"></script>
+</body>
+</html> 
