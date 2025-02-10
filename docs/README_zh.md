@@ -50,6 +50,8 @@
 
 ## 开发说明
 
+1、Currently, multi-language is not supported, only Chinese is supported
+
 ### 项目结构
 
 ```
@@ -63,20 +65,6 @@ GLM-HIGHLIGHTER
 ├── popup/ # 弹出窗口相关
 └── locales/ # 国际化资源
 ```
-
-### 本地开发
-
-1. 克隆仓库
-2. 安装依赖
-3. 构建项目
-4. 在 Chrome 扩展管理页面加载 `dist` 目录
-
-### 贡献指南
-
-1. Fork 项目
-2. 创建特性分支
-3. 提交改动
-4. 发起 Pull Request
 
 ## 隐私说明
 
@@ -93,8 +81,7 @@ MIT License
 如有问题或建议，请通过以下方式反馈：
 
 1. 提交 GitHub Issue
-2. 发送邮件至 [support-email]
-3. 在 Chrome 网上应用店留言
+2. 发送邮件至 [297390763@qq.com]
 
 ## 更新日志
 
@@ -103,9 +90,6 @@ MIT License
 - 初始版本发布
 - 实现基础高亮功能
 - 支持多分类管理
-
-### v1.1.0
-
 - 添加快捷键支持
 - 优化性能
 - 修复已知问题

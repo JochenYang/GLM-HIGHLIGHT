@@ -50,6 +50,8 @@ A powerful Chrome extension for webpage text highlighting management. Supporting
 
 ## Development Guide
 
+1、目前暂不支持多语言，仅支持中文
+
 ### Project Structure
 
 ```
@@ -62,4 +64,37 @@ GLM-HIGHLIGHTER
 │   └── utils.js         # Utility functions
 ├── popup/                # Popup window
 └── locales/             # i18n resources
+```
+
+## Privacy Statement
+
+- Extension only runs on user authorized pages
+- No personal information collection
+- Local data storage with Chrome sync service only
+
+## License
+
+MIT License
+
+## Feedback
+
+For issues or suggestions:
+
+1. Submit GitHub Issue
+2. Send email to [297390763@qq.com]
+
+## Changelog
+
+### v1.0.0
+
+- Initial release
+- Basic highlighting functionality
+- Multi-category support
+- Keyboard shortcuts added
+- Performance optimization
+- Bug fixes
+
+```
+
+</rewritten_file>
 ```
