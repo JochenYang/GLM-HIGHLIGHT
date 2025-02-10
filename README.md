@@ -50,7 +50,7 @@ A powerful Chrome extension for webpage text highlighting management. Supporting
 
 ## Development Guide
 
-1、目前暂不支持多语言，仅支持中文
+1、Currently, multi-language is not supported, only Chinese is supported
 
 ### Project Structure
 
@@ -84,6 +84,11 @@ For issues or suggestions:
 2. Send email to [297390763@qq.com]
 
 ## Changelog
+
+### v1.0.1
+
+- Optimize text node processing
+- Optimize performance
 
 ### v1.0.0
 
