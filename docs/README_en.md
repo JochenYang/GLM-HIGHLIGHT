@@ -1,4 +1,4 @@
-# Multi-functional Text Highlighter Extension | [中文文档](./docs/README_zh.md)
+# Multi-functional Text Highlighter Extension
 
 A powerful Chrome extension for webpage text highlighting management. Supporting multi-category, hotkeys, highlight synchronization and more features.
 
@@ -23,7 +23,6 @@ A powerful Chrome extension for webpage text highlighting management. Supporting
   - One-click highlight clearing
 
 - 🔄 Data Synchronization
-
   - Cross-device settings sync
   - Import/export configurations
   - Auto-save highlight states
@@ -51,13 +50,3 @@ A powerful Chrome extension for webpage text highlighting management. Supporting
 ## Development Guide
 
 ### Project Structure
-
-GLM-HIGHLIGHTER
-├── manifest.json # 扩展配置文件
-├── js/
-│ ├── background.js # Background service
-│ ├── content-action.js # Content script
-│ ├── highlighter.js # Core highlighting implementation
-│ └── utils.js # Utility functions
-├── popup/ # Popup window
-└── locales/ # i18n resources
