@@ -74,12 +74,22 @@ const throttledProcess = Utils.performance.throttle(processNodes, 100);
 // 统一的DOM观察器
 function setupUnifiedObserver() {
   let lastUrl = location.href;
+  let observer;
 
-  const observer = new MutationObserver((mutations) => {
+  observer = new MutationObserver((mutations) => {
     try {
       // 1. 检查URL变化
       if (location.href !== lastUrl) {
         lastUrl = location.href;
+        // 重置观察器
+        observer.disconnect();
+        observer.observe(document.documentElement, {
+          childList: true,
+          subtree: true,
+          characterData: true,
+          characterDataOldValue: true,
+        });
+
         if (window.tabActive && window.keywords?.length) {
           window.highlighter.highlight(document.body, window.keywords);
         }
@@ -135,7 +145,11 @@ function setupUnifiedObserver() {
 // 初始化函数
 async function initialize(retryCount = 0) {
   try {
-    // 1. 获取初始状态
+    // 1. 预先设置默认状态,避免等待
+    window.tabActive = false;
+    window.keywords = [];
+
+    // 2. 异步获取状态
     const [isActive, keywords] = await Promise.all([
       chrome.runtime.sendMessage({
         opt: "rpc",
@@ -147,21 +161,55 @@ async function initialize(retryCount = 0) {
       }),
     ]);
 
-    // 2. 设置全局状态
+    // 3. 更新状态
     window.tabActive = isActive;
     window.keywords = keywords || [];
 
-    // 3. 立即执行初始高亮，不等待 requestAnimationFrame
+    // 4. 使用 requestAnimationFrame 执行初始高亮
     if (window.tabActive && window.keywords?.length) {
-      window.highlighter.highlight(document.body, window.keywords);
+      requestAnimationFrame(() => {
+        // 分批处理可视区域内的节点
+        const visibleNodes = new Set();
+        const observer = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              visibleNodes.add(entry.target);
+            }
+          });
+        });
+
+        // 优先处理可视区域
+        processNodes(visibleNodes);
+
+        // 然后处理剩余区域
+        window.highlighter.highlight(document.body, window.keywords);
+
+        // 处理完成后断开观察器
+        observer.disconnect();
+      });
     }
 
-    // 4. 设置观察器
+    // 5. 设置观察器
     setupUnifiedObserver();
+
+    // 6. 添加页面卸载时的清理
+    window.addEventListener(
+      "unload",
+      () => {
+        if (dialogElement) {
+          document.removeEventListener("mousedown", closeHandler);
+          dialogElement.remove();
+          dialogElement = null;
+        }
+        observer?.disconnect();
+        window.highlighter?.clearCache();
+      },
+      { once: true }
+    );
   } catch (error) {
     Utils.handleError(error, "initialize", "RUNTIME");
     if (retryCount < 3) {
-      setTimeout(() => initialize(retryCount + 1), 100); // 减少重试延迟
+      setTimeout(() => initialize(retryCount + 1), 100);
     }
   }
 }
@@ -295,6 +343,7 @@ function isHighlightedText(node) {
 
 // 添加选择文本处理
 let dialogElement = null;
+let closeHandler;
 
 async function handleSelection(e) {
   try {
@@ -415,11 +464,12 @@ async function handleSelection(e) {
     document.body.appendChild(dialogElement);
 
     // 点击其他区域关闭弹窗
-    const closeHandler = (e) => {
+    closeHandler = (e) => {
       if (!dialogElement?.contains(e.target)) {
         dialogElement?.remove();
         dialogElement = null;
         document.removeEventListener("mousedown", closeHandler);
+        closeHandler = null;
       }
     };
     document.addEventListener("mousedown", closeHandler);

@@ -22,10 +22,33 @@ class TextHighlighter {
       ...options,
     };
 
-    // 使用 WeakMap 存储节点状态
+    // 添加缓存限制
+    this.MAX_PATTERN_CACHE = 1000;
     this.nodeStates = new WeakMap();
-    // 缓存正则表达式
     this.patternCache = new Map();
+
+    // 定期清理缓存
+    this._setupCacheCleanup();
+  }
+
+  _setupCacheCleanup() {
+    setInterval(() => {
+      // 清理超出限制的正则缓存
+      if (this.patternCache.size > this.MAX_PATTERN_CACHE) {
+        const entriesToDelete = this.patternCache.size - this.MAX_PATTERN_CACHE;
+        let count = 0;
+        for (const key of this.patternCache.keys()) {
+          if (count >= entriesToDelete) break;
+          this.patternCache.delete(key);
+          count++;
+        }
+      }
+    }, 60000); // 每分钟检查一次
+  }
+
+  clearCache() {
+    this.nodeStates = new WeakMap();
+    this.patternCache.clear();
   }
 
   // 修改文本节点合并逻辑
@@ -87,14 +110,12 @@ class TextHighlighter {
     if (!node || !keywords?.length) return;
 
     try {
-      // 收集文本节点
+      // 一次性收集所有文本节点
       const textNodes = this._collectTextNodes(node);
 
-      // 批量处理节点
+      // 批量处理节点但没有分片
       textNodes.forEach((textNode) => {
-        if (!this.shouldSkipNode(textNode)) {
-          this._processTextNode(textNode, keywords);
-        }
+        this._processTextNode(textNode, keywords);
       });
     } catch (error) {
       Utils.handleError(error, "highlight");
@@ -139,12 +160,16 @@ class TextHighlighter {
         (item) =>
           item?.words && typeof item.words === "string" && item.words.trim()
       )
-      .map((item) => ({
-        ...item,
-        words: item.words.trim(), // 只去除首尾空格,保持原始格式
-        pattern: this._getSearchPattern(item.words),
-        length: item.words.length,
-      }))
+      .map((item) => {
+        const processed = {
+          ...item,
+          words: item.words.trim(),
+          // 使用 WeakRef 包装正则对象
+          pattern: new WeakRef(this._getSearchPattern(item.words)),
+          length: item.words.length,
+        };
+        return processed;
+      })
       .sort((a, b) => b.length - a.length);
   }
 
