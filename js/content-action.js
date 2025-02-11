@@ -74,16 +74,14 @@ const throttledProcess = Utils.performance.throttle(processNodes, 100);
 // 统一的DOM观察器
 function setupUnifiedObserver() {
   let lastUrl = location.href;
-  let observer;
-
-  observer = new MutationObserver((mutations) => {
+  const mutationObserver = new MutationObserver((mutations) => {
     try {
       // 1. 检查URL变化
       if (location.href !== lastUrl) {
         lastUrl = location.href;
         // 重置观察器
-        observer.disconnect();
-        observer.observe(document.documentElement, {
+        mutationObserver.disconnect();
+        mutationObserver.observe(document.documentElement, {
           childList: true,
           subtree: true,
           characterData: true,
@@ -132,14 +130,14 @@ function setupUnifiedObserver() {
     }
   });
 
-  observer.observe(document.documentElement, {
+  mutationObserver.observe(document.documentElement, {
     childList: true,
     subtree: true,
     characterData: true,
     characterDataOldValue: true,
   });
 
-  return observer;
+  return mutationObserver;
 }
 
 // 初始化函数
@@ -165,12 +163,13 @@ async function initialize(retryCount = 0) {
     window.tabActive = isActive;
     window.keywords = keywords || [];
 
+    let intersectionObserver;
     // 4. 使用 requestAnimationFrame 执行初始高亮
     if (window.tabActive && window.keywords?.length) {
       requestAnimationFrame(() => {
         // 分批处理可视区域内的节点
         const visibleNodes = new Set();
-        const observer = new IntersectionObserver((entries) => {
+        intersectionObserver = new IntersectionObserver((entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
               visibleNodes.add(entry.target);
@@ -185,12 +184,12 @@ async function initialize(retryCount = 0) {
         window.highlighter.highlight(document.body, window.keywords);
 
         // 处理完成后断开观察器
-        observer.disconnect();
+        intersectionObserver.disconnect();
       });
     }
 
     // 5. 设置观察器
-    setupUnifiedObserver();
+    const mutationObserver = setupUnifiedObserver();
 
     // 6. 添加页面卸载时的清理
     window.addEventListener(
@@ -201,7 +200,8 @@ async function initialize(retryCount = 0) {
           dialogElement.remove();
           dialogElement = null;
         }
-        observer?.disconnect();
+        intersectionObserver?.disconnect();
+        mutationObserver?.disconnect();
         window.highlighter?.clearCache();
       },
       { once: true }
