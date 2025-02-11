@@ -85,6 +85,10 @@ For issues or suggestions:
 
 ## Changelog
 
+### v1.0.2
+
+- Fix memory leak problem
+
 ### v1.0.1
 
 - Optimize text node processing
