@@ -762,7 +762,7 @@ $(function () {
 
   // 支持链接处理
   $("#support-link").click(() => {
-    chrome.tabs.create({ url: "https://www.geluman.cn/highlight.html" });
+    chrome.tabs.create({ url: "https://www.geluman.cn/products/highlight" });
   });
 
   // 修改分享对话框 HTML
