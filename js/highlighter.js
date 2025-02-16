@@ -1,16 +1,10 @@
 // 核心高亮类
 class TextHighlighter {
   constructor(options = {}) {
-    // 确保配置可用
-    this.config = window.HighlighterConfig || {
-      className: "chrome-extension-mutihighlight",
-      stylePrefix: "chrome-extension-mutihighlight-style-",
-      batchSize: 50,
-      filterRules: {
-        shouldSkipTag: () => false,
-        shouldAllowInput: () => true,
-        isEditable: () => false,
-      },
+    // 使用统一配置
+    this.config = {
+      ...window.HighlighterConfig,
+      ...options,
     };
 
     // 合并选项
@@ -18,7 +12,7 @@ class TextHighlighter {
       caseSensitive: true, // 修改为 true，支持大小写敏感
       className: this.config.className,
       stylePrefix: this.config.stylePrefix,
-      batchSize: this.config.batchSize,
+      batchSize: this.config.performance.batch.size,
       ...options,
     };
 
@@ -81,7 +75,7 @@ class TextHighlighter {
   processBatch(nodes, processor) {
     let processed = 0;
     const processNextBatch = () => {
-      const batchSize = this.config.batchSize;
+      const batchSize = this.config.performance.batch.size;
       const end = Math.min(processed + batchSize, nodes.length);
 
       for (let i = processed; i < end; i++) {
@@ -197,7 +191,7 @@ class TextHighlighter {
 
   // 高效批量处理节点
   _processNodes(nodes, keywords) {
-    const batchSize = this.config.batchSize;
+    const batchSize = this.config.performance.batch.size;
     const total = nodes.length;
 
     for (let i = 0; i < total; i += batchSize) {

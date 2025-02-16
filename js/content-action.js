@@ -8,6 +8,13 @@ if (document.readyState === "loading") {
 // 使用highlighter的实例
 const highlighter = window.highlighter;
 
+// 使用统一配置
+const batchSize = window.HighlighterConfig.performance.batch.size;
+const throttledProcess = Utils.performance.throttle(
+  processNodes,
+  window.HighlighterConfig.performance.throttle.mutation
+);
+
 // 优化的节点处理
 function processNodes(nodes, options = {}) {
   if (!nodes.size) return;
@@ -27,7 +34,6 @@ function processNodes(nodes, options = {}) {
           return;
         }
 
-        const batchSize = window.highlighter.config.batchSize;
         const end = Math.min(processed + batchSize, nodes.size);
 
         const processNode = (node) => {
@@ -68,8 +74,6 @@ function processNodes(nodes, options = {}) {
     }
   }, options);
 }
-
-const throttledProcess = Utils.performance.throttle(processNodes, 100);
 
 // 统一的DOM观察器
 function setupUnifiedObserver() {
@@ -143,7 +147,7 @@ function setupUnifiedObserver() {
 // 初始化函数
 async function initialize(retryCount = 0) {
   try {
-    // 1. 预先设置默认状态,避免等待
+    // 1. 预先设置默认状态
     window.tabActive = false;
     window.keywords = [];
 
@@ -163,8 +167,8 @@ async function initialize(retryCount = 0) {
     window.tabActive = isActive;
     window.keywords = keywords || [];
 
+    // 4. 设置观察器和处理可视区域
     let intersectionObserver;
-    // 4. 使用 requestAnimationFrame 执行初始高亮
     if (window.tabActive && window.keywords?.length) {
       requestAnimationFrame(() => {
         // 分批处理可视区域内的节点
@@ -188,7 +192,7 @@ async function initialize(retryCount = 0) {
       });
     }
 
-    // 5. 设置观察器
+    // 5. 设置DOM观察器
     const mutationObserver = setupUnifiedObserver();
 
     // 6. 添加页面卸载时的清理

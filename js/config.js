@@ -54,6 +54,43 @@ const createHighlighterConfig = () => {
         return false;
       },
     },
+
+    // 添加统一的性能配置
+    performance: {
+      // 批处理相关
+      batch: {
+        size: 50, // 默认批处理大小
+        delay: 16, // requestAnimationFrame 的备用延迟
+        maxNodes: 1000, // 单次处理最大节点数
+      },
+
+      // 防抖节流配置
+      debounce: {
+        input: 500, // 输入防抖
+        scroll: 150, // 滚动防抖
+        resize: 250, // 窗口调整防抖
+        update: 500, // 更新防抖
+      },
+
+      // 节流配置
+      throttle: {
+        scroll: 100, // 滚动节流
+        mutation: 100, // DOM变化节流
+        highlight: 100, // 高亮处理节流
+      },
+
+      // 缓存配置
+      cache: {
+        maxSize: 1000, // 最大缓存条目数
+        cleanupInterval: 5000, // 清理间隔(ms)
+      },
+
+      // DOM处理配置
+      dom: {
+        maxDepth: 32, // 最大遍历深度
+        textNodeMinLength: 2, // 最小处理文本长度
+      },
+    },
   };
 
   return config;

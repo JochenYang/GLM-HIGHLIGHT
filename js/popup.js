@@ -75,7 +75,7 @@ $(function () {
     } catch (error) {
       console.error("更新关键词失败:", error);
     }
-  }, 500); // 增加防抖时间到500ms,给用户更多输入时间
+  }, window.HighlighterConfig.performance.debounce.update);
 
   // 使用 Utils.throttle
   const throttledFunction = Utils.throttle(function () {
@@ -265,7 +265,10 @@ $(function () {
   });
 
   // 优化颜色选择器定位
-  const throttledPositionColorBox = throttle(function ($colorBox, $target) {
+  const throttledPositionColorBox = Utils.throttle(function (
+    $colorBox,
+    $target
+  ) {
     const targetRect = $target[0].getBoundingClientRect();
     const colorBoxRect = $colorBox[0].getBoundingClientRect();
     const viewportHeight = window.innerHeight;
@@ -279,7 +282,8 @@ $(function () {
       top: `${top}px`,
       left: `${targetRect.left}px`,
     });
-  }, 16);
+  },
+  window.HighlighterConfig.performance.throttle.scroll);
 
   // 修改renderListItems函数
   function renderListItems(items) {
