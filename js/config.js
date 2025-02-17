@@ -4,49 +4,41 @@ const createHighlighterConfig = () => {
     className: "chrome-extension-mutihighlight",
     stylePrefix: "chrome-extension-mutihighlight-style-",
 
-    // 批处理配置
-    batchSize: 50,
-
-    // 需要跳过的标签配置
-    skipTags: {
-      // 系统级标签，只跳过真正不应该高亮的标签
-      system: ["SCRIPT", "STYLE", "NOSCRIPT"],
-
-      // 可编辑标签的处理规则
-      editableTags: ["INPUT", "TEXTAREA"],
-    },
-
-    // 节点过滤规则
+    // 过滤规则优化
     filterRules: {
       // 检查标签是否应该跳过
       shouldSkipTag(node) {
-        // 只过滤 script 和 style 标签及其子元素
+        // 只过滤必要的标签
         return (
           node.tagName &&
-          (["SCRIPT", "STYLE"].includes(node.tagName) ||
-            (node.parentNode &&
-              ["SCRIPT", "STYLE"].includes(node.parentNode.tagName)))
+          (["SCRIPT", "STYLE", "NOSCRIPT"].includes(node.tagName) ||
+            node.isContentEditable ||
+            (node.parentNode && node.parentNode.isContentEditable))
         );
       },
 
-      // 检查是否允许高亮
+      // 改回原来的函数名，但保持优化的逻辑
       shouldAllowInput(element) {
-        // 只检查是否可编辑
+        // 改回原函数名
+        // 检查是否可编辑或在特殊标签内
         return !(
           element &&
-          ((element.parentNode && element.parentNode.isContentEditable) ||
-            element.isContentEditable)
+          (element.isContentEditable ||
+            ["INPUT", "TEXTAREA"].includes(element.tagName) ||
+            (element.parentNode &&
+              ["SCRIPT", "STYLE", "NOSCRIPT"].includes(
+                element.parentNode.tagName
+              )))
         );
       },
 
-      // 检查元素是否可编辑
+      // 添加回这个必要的函数
       isEditable(node, root) {
-        // 检查节点到根节点路径上是否有可编辑元素或 style/script
         while (node && node !== root) {
           if (
             node.tagName &&
             (node.isContentEditable ||
-              ["STYLE", "SCRIPT"].includes(node.tagName))
+              ["STYLE", "SCRIPT", "NOSCRIPT"].includes(node.tagName))
           )
             return true;
           node = node.parentNode;
@@ -55,26 +47,22 @@ const createHighlighterConfig = () => {
       },
     },
 
-    // 添加统一的性能配置
+    // 性能配置精简
     performance: {
       // 批处理相关
       batch: {
         size: 50, // 默认批处理大小
-        delay: 16, // requestAnimationFrame 的备用延迟
         maxNodes: 1000, // 单次处理最大节点数
       },
 
-      // 防抖节流配置
+      // 防抖配置
       debounce: {
         input: 500, // 输入防抖
-        scroll: 150, // 滚动防抖
-        resize: 250, // 窗口调整防抖
         update: 500, // 更新防抖
       },
 
       // 节流配置
       throttle: {
-        scroll: 100, // 滚动节流
         mutation: 100, // DOM变化节流
         highlight: 100, // 高亮处理节流
       },
@@ -82,13 +70,6 @@ const createHighlighterConfig = () => {
       // 缓存配置
       cache: {
         maxSize: 1000, // 最大缓存条目数
-        cleanupInterval: 5000, // 清理间隔(ms)
-      },
-
-      // DOM处理配置
-      dom: {
-        maxDepth: 32, // 最大遍历深度
-        textNodeMinLength: 2, // 最小处理文本长度
       },
     },
   };
@@ -96,9 +77,8 @@ const createHighlighterConfig = () => {
   return config;
 };
 
-// 确保配置在不同环境下都可用
+// 导出配置
 (function (global) {
-  // 创建配置实例
   const config = createHighlighterConfig();
 
   // 绑定过滤规则中的this
@@ -108,10 +88,5 @@ const createHighlighterConfig = () => {
     }
   });
 
-  // 导出配置
-  if (typeof module !== "undefined" && module.exports) {
-    module.exports = config;
-  } else {
-    global.HighlighterConfig = config;
-  }
+  global.HighlighterConfig = config;
 })(typeof window !== "undefined" ? window : global);

@@ -210,6 +210,14 @@ async function initialize(retryCount = 0) {
       },
       { once: true }
     );
+
+    // 添加延迟处理
+    setTimeout(() => {
+      if (window.tabActive && window.keywords?.length) {
+        // 再次处理整个文档
+        window.highlighter.highlight(document.body, window.keywords);
+      }
+    }, 1000); // 延迟1秒确保动态内容加载
   } catch (error) {
     Utils.handleError(error, "initialize", "RUNTIME");
     if (retryCount < 3) {
