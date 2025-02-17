@@ -83,27 +83,4 @@ For issues or suggestions:
 1. Submit GitHub Issue
 2. Send email to [297390763@qq.com]
 
-## Changelog
-
-### v1.0.2
-
-- Fix memory leak problem
-
-### v1.0.1
-
-- Optimize text node processing
-- Optimize performance
-
-### v1.0.0
-
-- Initial release
-- Basic highlighting functionality
-- Multi-category support
-- Keyboard shortcuts added
-- Performance optimization
-- Bug fixes
-
-```
-
-</rewritten_file>
-```
+For changelog details, please see Releases.
