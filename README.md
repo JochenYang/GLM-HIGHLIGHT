@@ -1,14 +1,14 @@
 <div align="center">
-  <h1>
+  <h2 style="font-size: 1.5em; margin: 1em 0;">
     <img src="./img/logo.png" alt="GLM-HIGHLIGHT" width="128" />
     <br>
     Multi-functional Text Highlighter Extension
     <br>
-    <a href="./docs/README_zh.md">中文文档</a>
-  </h1>
+    <a href="./docs/README_zh.md" style="font-size: 0.9em; color: #666;">中文文档</a>
+  </h2>
 </div>
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/JochenYang/GLM-HIGHLIGHT/releases)
+[![Version](https://img.shields.io/badge/version-1.0.5-blue.svg)](https://github.com/JochenYang/GLM-HIGHLIGHT/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/JochenYang/GLM-HIGHLIGHT/pulls)
 [![Issues](https://img.shields.io/badge/issues-welcome-orange.svg)](https://github.com/JochenYang/GLM-HIGHLIGHT/issues)

@@ -1,14 +1,14 @@
 <div align="center">
-  <h1>
+  <h2 style="font-size: 1.5em; margin: 1em 0;">
     <img src="../img/logo.png" alt="GLM-HIGHLIGHT" width="128" />
     <br>
     多功能文本高亮扩展
     <br>
-    <a href="../README.md">English</a>
-  </h1>
+    <a href="../README.md" style="font-size: 0.9em; color: #666;">English</a>
+  </h2>
 </div>
 
-[![版本](https://img.shields.io/badge/版本-1.0.0-blue.svg)](https://github.com/JochenYang/GLM-HIGHLIGHT/releases)
+[![版本](https://img.shields.io/badge/版本-1.0.5-blue.svg)](https://github.com/JochenYang/GLM-HIGHLIGHT/releases)
 [![许可](https://img.shields.io/badge/许可-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![欢迎PR](https://img.shields.io/badge/PR-welcome-brightgreen.svg)](https://github.com/JochenYang/GLM-HIGHLIGHT/pulls)
 [![问题](https://img.shields.io/badge/issues-welcome-orange.svg)](https://github.com/JochenYang/GLM-HIGHLIGHT/issues)
