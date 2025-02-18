@@ -1,5 +1,10 @@
 # Multi-functional Text Highlighter Extension | [中文文档](./docs/README_zh.md)
 
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/yourusername/GLM-HIGHLIGHTER/releases)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/yourusername/GLM-HIGHLIGHTER/pulls)
+[![Issues](https://img.shields.io/badge/issues-welcome-orange.svg)](https://github.com/yourusername/GLM-HIGHLIGHTER/issues)
+
 A powerful Chrome extension for webpage text highlighting management. Supporting multi-category, hotkeys, highlight synchronization and more features.
 
 ## Key Features

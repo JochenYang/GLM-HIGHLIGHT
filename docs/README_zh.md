@@ -1,5 +1,10 @@
 # 多功能文本高亮扩展 | [English](../README.md)
 
+[![版本](https://img.shields.io/badge/版本-1.0.0-blue.svg)](https://github.com/yourusername/GLM-HIGHLIGHTER/releases)
+[![许可](https://img.shields.io/badge/许可-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![欢迎PR](https://img.shields.io/badge/PR-welcome-brightgreen.svg)](https://github.com/yourusername/GLM-HIGHLIGHTER/pulls)
+[![问题](https://img.shields.io/badge/issues-welcome-orange.svg)](https://github.com/yourusername/GLM-HIGHLIGHTER/issues)
+
 一个强大的 Chrome 浏览器扩展，用于网页文本高亮管理。支持多分类、快捷键操作、高亮同步等功能。
 
 ## 主要功能

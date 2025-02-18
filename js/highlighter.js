@@ -331,20 +331,69 @@ class TextHighlighter {
     return this.shouldSkipNode(node);
   }
 
-  // 清除高亮
+  // 清理空的高亮 span 标签
+  _cleanEmptySpans(container) {
+    if (!container) return;
+
+    const spans = Array.from(
+      container.getElementsByClassName(this.config.className)
+    );
+    
+    this.processBatch(spans, (span) => {
+      if (!span.textContent.trim()) {
+        span.remove();
+      }
+    });
+  }
+
+  // 优化后的清理高亮方法
   clearHighlight(node) {
     try {
       if (!node) return;
 
-      // 使用 DOMCleaner 的清理方法
-      DOMCleaner.cleanContainer(node);
-      DOMCleaner.cleanEmptySpans(node);
+      // 获取所有高亮元素
+      const highlights = node.getElementsByClassName(this.config.className);
+      
+      // 使用批处理清理高亮
+      Array.from(highlights).forEach((highlight) => {
+        if (!highlight || !highlight.parentNode) return;
+
+        // 获取高亮文本
+        const text = highlight.textContent;
+
+        // 处理相邻文本节点
+        if (highlight.previousSibling?.nodeType === Node.TEXT_NODE && 
+            highlight.nextSibling?.nodeType === Node.TEXT_NODE) {
+          // 合并前后文本节点
+          highlight.previousSibling.nodeValue = 
+            highlight.previousSibling.nodeValue + 
+            text + 
+            highlight.nextSibling.nodeValue;
+          highlight.nextSibling.remove();
+        } else if (highlight.previousSibling?.nodeType === Node.TEXT_NODE) {
+          // 合并前面的文本节点
+          highlight.previousSibling.nodeValue += text;
+        } else if (highlight.nextSibling?.nodeType === Node.TEXT_NODE) {
+          // 合并后面的文本节点
+          highlight.nextSibling.nodeValue = text + highlight.nextSibling.nodeValue;
+        } else {
+          // 创建新的文本节点
+          const textNode = document.createTextNode(text);
+          highlight.parentNode.insertBefore(textNode, highlight);
+        }
+
+        // 移除高亮元素
+        highlight.remove();
+      });
+
+      // 清理空的 span 标签
+      this._cleanEmptySpans(node);
 
       // 清理缓存
       this.nodeStates = new WeakMap();
       this.patternCache.clear();
     } catch (error) {
-      Utils.handleError(error, "clearHighlight");
+      console.error("清理高亮失败:", error);
     }
   }
 

@@ -1,9 +1,6 @@
-// 启动初始化
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", () => initialize());
-} else {
-  initialize();
-}
+// 全局变量声明
+let dialogElement = null;
+let closeHandler = null;
 
 // 使用highlighter的实例
 const highlighter = window.highlighter;
@@ -12,8 +9,15 @@ const highlighter = window.highlighter;
 const batchSize = window.HighlighterConfig.performance.batch.size;
 const throttledProcess = Utils.performance.throttle(
   processNodes,
-  window.HighlighterConfig.performance.throttle.mutation
+  window.HighlighterConfig.performance.throttle.default  // 使用默认节流时间
 );
+
+// 启动初始化
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => initialize());
+} else {
+  initialize();
+}
 
 // 优化的节点处理
 function processNodes(nodes, options = {}) {
@@ -39,16 +43,21 @@ function processNodes(nodes, options = {}) {
         const processNode = (node) => {
           if (node instanceof Node && document.contains(node)) {
             try {
-              // 确保完全清理旧的高亮
-              window.highlighter.clearHighlight(node);
-
-              // 检查节点是否仍在文档中
-              if (
-                document.contains(node) &&
-                window.tabActive &&
-                window.keywords?.length
-              ) {
-                window.highlighter.highlight(node, window.keywords);
+              // 检查节点是否是新增的内容
+              const isNewContent = !node.classList?.contains(window.highlighter.config.className);
+              
+              if (window.tabActive && window.keywords?.length) {
+                if (isNewContent) {
+                  // 对于新内容，直接高亮
+                  window.highlighter.highlight(node, window.keywords);
+                } else {
+                  // 对于更新的内容，先清理再高亮
+                  window.highlighter.clearHighlight(node);
+                  window.highlighter.highlight(node, window.keywords);
+                }
+              } else {
+                // 如果高亮被禁用，只清理已有的高亮
+                window.highlighter.clearHighlight(node);
               }
             } catch (error) {
               console.warn("处理节点失败:", error);
@@ -354,9 +363,6 @@ function isHighlightedText(node) {
 }
 
 // 添加选择文本处理
-let dialogElement = null;
-let closeHandler;
-
 async function handleSelection(e) {
   try {
     const text = window.getSelection().toString().trim();
