@@ -1,67 +1,179 @@
 /* 定义高亮颜色变量 */
 :root {
-    --highlight-color-1: #eb4d4b;
-    --highlight-color-2: #000000;
-    --highlight-color-3: #0000FF;
-    --highlight-color-4: #8A2BE2;
-    --highlight-color-5: #A52A2A;
-    --highlight-color-6: #FA541C;
-    --highlight-color-7: #4834d4;
-    --highlight-color-8: #05c46b;
-    --highlight-color-9: #D2691E;
-    --highlight-color-10: #6495ED;
-    --highlight-color-11: #006400;
-    --highlight-color-12: #2c2c54;
-    --highlight-color-13: #FF1493;
-    --highlight-color-14: #F0ac11;
-    --highlight-color-15: #FF69B4;
-    --highlight-color-16: #4B0082;
-    --highlight-color-17: #B33771;
-    --highlight-color-18: #BA55D3;
-    --highlight-color-19: #9ACD32;
-    --highlight-color-20: #FF0000;
+  /* 深色系 */
+  --highlight-color-1: #ffff00;
+  --highlight-color-2: #ff0000;
+  --highlight-color-3: #4b0082;
+  --highlight-color-4: #00b050;
+  --highlight-color-5: #191970;
+  --highlight-color-6: #8b4513;
+  --highlight-color-7: #800000;
+  --highlight-color-8: #4834d4;
+  --highlight-color-9: #8a2be2;
+  --highlight-color-10: #a52a2a;
+  /* 中等色系 */
+  --highlight-color-11: #b33771;
+  --highlight-color-12: #ba55d3;
+  --highlight-color-13: #699e07;
+  --highlight-color-14: #eb4d4b;
+  --highlight-color-15: #fa541c;
+  --highlight-color-16: #ff1493;
+  --highlight-color-17: #0070c0;
+  --highlight-color-18: #002060;
+  --highlight-color-19: #0000ff;
+  --highlight-color-20: #008080;
+  /* 浅色系 */
+  --highlight-color-21: #1e88e5;
+  --highlight-color-22: #6a1b9a;
+  --highlight-color-23: #d84315;
+  --highlight-color-24: #2e7d32;
+  --highlight-color-25: #283593;
+  --highlight-color-26: #ad1457;
+  --highlight-color-27: #4527a0;
+  --highlight-color-28: #00695c;
+  --highlight-color-29: #5d4037;
+  --highlight-color-30: #455a64;
 }
 
 /* 基础高亮样式 */
 .chrome-extension-mutihighlight {
-    display: inline !important;
-    background: var(--highlight-color) !important;
-    color: #fff !important;
-    border-radius: 3px !important;
-    /* padding: 0 3px !important; */
-    user-select: text !important;
-    /* 硬件加速 */
-    transform: translateZ(0) !important;
+  display: inline !important;
+  background: var(--highlight-color) !important;
+  border-radius: 3px !important;
+  /* padding: 0 3px !important; */
+  user-select: text !important;
+  /* 硬件加速 */
+  transform: translateZ(0) !important;
+  color: #fff !important;
 }
 
 /* 为每个颜色样式设置变量 */
-.chrome-extension-mutihighlight-style-1 { --highlight-color: var(--highlight-color-1); }
-.chrome-extension-mutihighlight-style-2 { --highlight-color: var(--highlight-color-2); }
-.chrome-extension-mutihighlight-style-3 { --highlight-color: var(--highlight-color-3); }
-.chrome-extension-mutihighlight-style-4 { --highlight-color: var(--highlight-color-4); }
-.chrome-extension-mutihighlight-style-5 { --highlight-color: var(--highlight-color-5); }
-.chrome-extension-mutihighlight-style-6 { --highlight-color: var(--highlight-color-6); }
-.chrome-extension-mutihighlight-style-7 { --highlight-color: var(--highlight-color-7); }
-.chrome-extension-mutihighlight-style-8 { --highlight-color: var(--highlight-color-8); }
-.chrome-extension-mutihighlight-style-9 { --highlight-color: var(--highlight-color-9); }
-.chrome-extension-mutihighlight-style-10 { --highlight-color: var(--highlight-color-10); }
-.chrome-extension-mutihighlight-style-11 { --highlight-color: var(--highlight-color-11); }
-.chrome-extension-mutihighlight-style-12 { --highlight-color: var(--highlight-color-12); }
-.chrome-extension-mutihighlight-style-13 { --highlight-color: var(--highlight-color-13); }
-.chrome-extension-mutihighlight-style-14 { --highlight-color: var(--highlight-color-14); }
-.chrome-extension-mutihighlight-style-15 { --highlight-color: var(--highlight-color-15); }
-.chrome-extension-mutihighlight-style-16 { --highlight-color: var(--highlight-color-16); }
-.chrome-extension-mutihighlight-style-17 { --highlight-color: var(--highlight-color-17); }
-.chrome-extension-mutihighlight-style-18 { --highlight-color: var(--highlight-color-18); }
-.chrome-extension-mutihighlight-style-19 { --highlight-color: var(--highlight-color-19); }
-.chrome-extension-mutihighlight-style-20 { --highlight-color: var(--highlight-color-20); }
+.chrome-extension-mutihighlight-style-1 {
+  --highlight-color: var(--highlight-color-1);
+  color: #000 !important;
+}
 
+.chrome-extension-mutihighlight-style-2 {
+  --highlight-color: var(--highlight-color-2);
+}
 
+.chrome-extension-mutihighlight-style-3 {
+  --highlight-color: var(--highlight-color-3);
+}
+
+.chrome-extension-mutihighlight-style-4 {
+  --highlight-color: var(--highlight-color-4);
+  color: #000 !important;
+}
+
+.chrome-extension-mutihighlight-style-5 {
+  --highlight-color: var(--highlight-color-5);
+}
+
+.chrome-extension-mutihighlight-style-6 {
+  --highlight-color: var(--highlight-color-6);
+}
+
+.chrome-extension-mutihighlight-style-7 {
+  --highlight-color: var(--highlight-color-7);
+}
+
+.chrome-extension-mutihighlight-style-8 {
+  --highlight-color: var(--highlight-color-8);
+}
+
+.chrome-extension-mutihighlight-style-9 {
+  --highlight-color: var(--highlight-color-9);
+}
+
+.chrome-extension-mutihighlight-style-10 {
+  --highlight-color: var(--highlight-color-10);
+}
+
+.chrome-extension-mutihighlight-style-11 {
+  --highlight-color: var(--highlight-color-11);
+}
+
+.chrome-extension-mutihighlight-style-12 {
+  --highlight-color: var(--highlight-color-12);
+}
+
+.chrome-extension-mutihighlight-style-13 {
+  --highlight-color: var(--highlight-color-13);
+}
+
+.chrome-extension-mutihighlight-style-14 {
+  --highlight-color: var(--highlight-color-14);
+}
+
+.chrome-extension-mutihighlight-style-15 {
+  --highlight-color: var(--highlight-color-15);
+}
+
+.chrome-extension-mutihighlight-style-16 {
+  --highlight-color: var(--highlight-color-16);
+}
+
+.chrome-extension-mutihighlight-style-17 {
+  --highlight-color: var(--highlight-color-17);
+}
+
+.chrome-extension-mutihighlight-style-18 {
+  --highlight-color: var(--highlight-color-18);
+}
+
+.chrome-extension-mutihighlight-style-19 {
+  --highlight-color: var(--highlight-color-19);
+}
+
+.chrome-extension-mutihighlight-style-20 {
+  --highlight-color: var(--highlight-color-20);
+}
+
+.chrome-extension-mutihighlight-style-21 {
+  --highlight-color: var(--highlight-color-21);
+}
+
+.chrome-extension-mutihighlight-style-22 {
+  --highlight-color: var(--highlight-color-22);
+}
+
+.chrome-extension-mutihighlight-style-23 {
+  --highlight-color: var(--highlight-color-23);
+}
+
+.chrome-extension-mutihighlight-style-24 {
+  --highlight-color: var(--highlight-color-24);
+}
+
+.chrome-extension-mutihighlight-style-25 {
+  --highlight-color: var(--highlight-color-25);
+}
+
+.chrome-extension-mutihighlight-style-26 {
+  --highlight-color: var(--highlight-color-26);
+}
+
+.chrome-extension-mutihighlight-style-27 {
+  --highlight-color: var(--highlight-color-27);
+}
+
+.chrome-extension-mutihighlight-style-28 {
+  --highlight-color: var(--highlight-color-28);
+}
+
+.chrome-extension-mutihighlight-style-29 {
+  --highlight-color: var(--highlight-color-29);
+}
+
+.chrome-extension-mutihighlight-style-30 {
+  --highlight-color: var(--highlight-color-30);
+}
 
 /* 确保高亮在打印时也能正常显示 */
 @media print {
-    .chrome-extension-mutihighlight {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-    }
+  .chrome-extension-mutihighlight {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
 }

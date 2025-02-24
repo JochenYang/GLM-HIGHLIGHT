@@ -16,28 +16,27 @@ class TextHighlighter {
       ...options,
     };
 
-    // 添加缓存限制
-    this.MAX_PATTERN_CACHE = 1000;
+    // 实现 LRU 缓存
+    this.MAX_PATTERN_CACHE = this.config.performance.batch.maxNodes || 1000;
     this.nodeStates = new WeakMap();
     this.patternCache = new Map();
+    this.patternCacheOrder = [];
 
-    // 定期清理缓存
-    this._setupCacheCleanup();
+    // 初始化 DOM 片段缓存
+    this.fragmentCache = new WeakMap();
   }
 
   _setupCacheCleanup() {
-    setInterval(() => {
-      // 清理超出限制的正则缓存
-      if (this.patternCache.size > this.MAX_PATTERN_CACHE) {
-        const entriesToDelete = this.patternCache.size - this.MAX_PATTERN_CACHE;
-        let count = 0;
-        for (const key of this.patternCache.keys()) {
-          if (count >= entriesToDelete) break;
-          this.patternCache.delete(key);
-          count++;
-        }
+    // 使用 LRU 缓存策略
+    const cleanupCache = () => {
+      while (this.patternCache.size > this.MAX_PATTERN_CACHE) {
+        const oldestKey = this.patternCacheOrder.shift();
+        this.patternCache.delete(oldestKey);
       }
-    }, 60000); // 每分钟检查一次
+    };
+
+    // 定期清理
+    setInterval(cleanupCache, 30000); // 每30秒检查一次
   }
 
   clearCache() {
@@ -174,6 +173,12 @@ class TextHighlighter {
     // 使用关键词和大小写选项作为缓存键
     const cacheKey = `${keyword}_${this.options.caseSensitive}`;
     if (this.patternCache.has(cacheKey)) {
+      // 更新 LRU 顺序
+      const index = this.patternCacheOrder.indexOf(cacheKey);
+      if (index > -1) {
+        this.patternCacheOrder.splice(index, 1);
+      }
+      this.patternCacheOrder.push(cacheKey);
       return this.patternCache.get(cacheKey);
     }
 
@@ -184,8 +189,14 @@ class TextHighlighter {
     const flags = this.options.caseSensitive ? "g" : "gi";
     const pattern = new RegExp(`(?:${escapedKeyword})`, flags);
 
-    // 缓存结果
+    // 使用 LRU 缓存策略
+    if (this.patternCache.size >= this.MAX_PATTERN_CACHE) {
+      const oldestKey = this.patternCacheOrder.shift();
+      this.patternCache.delete(oldestKey);
+    }
+
     this.patternCache.set(cacheKey, pattern);
+    this.patternCacheOrder.push(cacheKey);
     return pattern;
   }
 
@@ -443,9 +454,17 @@ class TextHighlighter {
     const parentElement = node.parentElement;
     if (!parentElement || this.shouldSkipNode(parentElement)) return;
 
+    // 检查缓存
+    const cacheKey = `${text}_${keywords.map(k => k.words || k).join('_')}`;
+    const cachedFragment = this.fragmentCache.get(node);
+    if (cachedFragment && cachedFragment.key === cacheKey) {
+      node.parentNode.replaceChild(cachedFragment.fragment.cloneNode(true), node);
+      return;
+    }
+
     // 创建匹配结果数组
     const matches = [];
-    const usedRanges = new Set();
+    const usedRanges = [];
 
     // 首先按长度排序关键词，优先匹配最长的
     const sortedKeywords = [...keywords].sort((a, b) => {
@@ -462,32 +481,23 @@ class TextHighlighter {
       while (index !== -1) {
         const end = index + keywordText.length;
 
-        // 优化重叠检查
-        let hasOverlap = false;
-        for (const range of usedRanges) {
-          const [usedStart, usedEnd] = range.split(",").map(Number);
-          // 更精确的重叠判断
-          if (Math.max(index, usedStart) < Math.min(end, usedEnd)) {
-            hasOverlap = true;
-            break;
-          }
-        }
-
-        if (!hasOverlap) {
+        // 使用二分查找优化重叠检查
+        if (!this._hasOverlap(usedRanges, index, end)) {
           matches.push({
             start: index,
             end: end,
             text: text.slice(index, end),
             keyword: keyword,
           });
-          usedRanges.add(`${index},${end}`);
+          usedRanges.push([index, end]);
+          usedRanges.sort((a, b) => a[0] - b[0]);
         }
 
         index = text.indexOf(keywordText, index + 1);
       }
     }
 
-    // 按起始位置排序 - 保留这行很重要！
+    // 按起始位置排序
     matches.sort((a, b) => a.start - b.start);
 
     // 处理匹配结果

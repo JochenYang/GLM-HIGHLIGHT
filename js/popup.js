@@ -530,10 +530,12 @@ $(function () {
 
   // 颜色选择处理
   let colorBoxVisible = false;
+  let lastClickedIndex = -1;
   $(document).on("click", function (e) {
     if (!$(e.target).closest(".colorSelect, .colorBox").length) {
-      $(".colorBox").fadeOut(200);
+      $(".colorBox").hide();
       colorBoxVisible = false;
+      lastClickedIndex = -1;
     }
   });
 
@@ -541,28 +543,54 @@ $(function () {
     e.stopPropagation();
 
     const $colorBox = $(".colorBox");
-    indexFlag = $(".colorSelect").index(this);
+    const currentIndex = $(".colorSelect").index(this);
+
+    // 如果点击的是同一个色块且颜色选择器已显示，则隐藏
+    if (currentIndex === lastClickedIndex && colorBoxVisible) {
+      $colorBox.hide();
+      colorBoxVisible = false;
+      lastClickedIndex = -1;
+      return;
+    }
+
+    // 更新索引和显示状态
+    indexFlag = currentIndex;
+    lastClickedIndex = currentIndex;
+    colorBoxVisible = true;
 
     // 计算位置
     const targetRect = this.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
+    const colorBoxWidth = $colorBox.outerWidth();
     const colorBoxHeight = $colorBox.outerHeight();
 
-    // 决定显示在目标元素的上方还是下方
+    // 计算最佳位置，优先显示在点击元素的下方
     let top = targetRect.bottom + 5;
+    let left = targetRect.left;
+
+    // 如果下方空间不足，则显示在上方
     if (top + colorBoxHeight > viewportHeight) {
       top = targetRect.top - colorBoxHeight - 5;
     }
 
-    // 设置位置并显示
+    // 确保不超出左右边界
+    if (left + colorBoxWidth > viewportWidth) {
+      left = viewportWidth - colorBoxWidth - 5;
+    }
+    if (left < 5) {
+      left = 5;
+    }
+
+    // 设置位置并显示，移除动画效果
     $colorBox
       .css({
-        position: "fixed",
-        top: `${top}px`,
-        left: `${targetRect.left}px`,
+        position: "absolute",
+        top: `${Math.max(5, top)}px`,
+        left: `${left}px`,
         zIndex: 1000,
       })
-      .fadeIn(200);
+      .show();
   });
 
   // 点击颜色选择器中的颜色
@@ -617,10 +645,12 @@ $(function () {
         args: [listData],
       });
 
-      // 隐藏颜色选择器
+      // 隐藏颜色选择器并重置状态
       $(".colorBox").fadeOut(200);
+      colorBoxVisible = false;
+      lastClickedIndex = -1;
     } catch (error) {
-      console.error("Error updating color:", error);
+      console.error("Error changing color:", error);
     } finally {
       isProcessing = false;
     }
@@ -1291,6 +1321,8 @@ $(function () {
   // 修改拖拽初始化函数
   function initDragAndDrop() {
     const container = $("#text-box");
+    let startY = 0; // 记录鼠标按下时的位置
+    let hasMoved = false; // 标记是否发生了移动
 
     container.find(".highlight-item").each((index, item) => {
       const $item = $(item);
@@ -1307,6 +1339,8 @@ $(function () {
         }
 
         e.preventDefault();
+        startY = e.clientY; // 记录初始Y坐标
+        hasMoved = false; // 重置移动标记
         dragStartIndex = $item.index();
         isDragging = true;
 
@@ -1349,6 +1383,11 @@ $(function () {
         // 处理拖动
         $(document).on("mousemove.drag", (e) => {
           if (!isDragging) return;
+
+          // 检查是否发生了足够的移动
+          if (Math.abs(e.clientY - startY) > 5) {
+            hasMoved = true;
+          }
 
           // 克隆元素跟随鼠标
           const newTop = e.clientY - mouseOffsetY;
@@ -1425,7 +1464,7 @@ $(function () {
 
           $(document).off(".drag");
 
-          if (dragEndIndex !== dragStartIndex) {
+          if (hasMoved && dragEndIndex !== dragStartIndex) {
             reorderCategories(dragStartIndex, dragEndIndex);
           }
         });

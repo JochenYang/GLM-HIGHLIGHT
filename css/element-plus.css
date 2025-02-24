@@ -99,6 +99,44 @@
   left: calc(100% - 17px);
 }
 
+/* 颜色选择器样式 */
+.color-picker {
+  position: fixed;
+  z-index: 2000;
+  background: #f5f7fa;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 12px;
+  width: 180px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid #e4e7ed;
+  display: none;
+}
+
+.color-picker__grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+  padding: 6px;
+  background-color: #f5f7fa;
+  border-radius: 4px;
+  border: 1px solid #e4e7ed;
+}
+
+.color-picker__item {
+  aspect-ratio: 1;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.color-picker__item:hover {
+  transform: scale(1.1);
+}
+
 .el-switch__core {
   margin: 0;
   display: inline-block;
@@ -148,24 +186,45 @@
 }
 
 /* 颜色选择器样式 */
-.colorBox {
+.color-picker {
   position: fixed;
   z-index: 2000;
-  background: #fff;
+  background: #f5f7fa;
   border-radius: 4px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
-  padding: 12px;
-  width: 240px;
-  top: 50%;
-  left: 50%;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  padding: 16px;
+  width: 200px;
   transform: translate(-50%, -50%);
+  top: 50%;
+  left: calc(50% - 32px);
+  border: 1px solid #e4e7ed;
+  margin-right: 32px;
+}
+
+/* 添加定位辅助类 */
+.color-picker.top {
+  margin-top: -8px;
+  transform: translateY(-100%);
+}
+
+.color-picker.right {
+  margin-left: 8px;
+  transform: translateX(0);
+}
+
+.color-picker.left {
+  margin-left: -248px;
+  transform: translateX(0);
 }
 
 .color-picker__grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 8px;
-  padding: 4px;
+  padding: 8px;
+  background-color: #f5f7fa;
+  border-radius: 4px;
+  border: 1px solid #e4e7ed;
 }
 
 .color-picker__item {
@@ -234,7 +293,8 @@
   width: 100%;
   min-height: 80px;
   padding: 8px 12px;
-  border: 1px solid #dcdfe6; /* 默认边框颜色 */
+  border: 1px solid #dcdfe6;
+  /* 默认边框颜色 */
   border-radius: 4px;
   resize: vertical;
   font-size: 14px;
@@ -247,7 +307,8 @@
 }
 
 .highlight-item__content textarea:focus {
-  border-color: #409eff; /* 聚焦时的边框颜色 */
+  border-color: #409eff;
+  /* 聚焦时的边框颜色 */
   outline: none;
   box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
 }
@@ -293,7 +354,7 @@
   margin-top: -8px;
 }
 
-.el-dialog__footer .el-button + .el-button {
+.el-dialog__footer .el-button+.el-button {
   margin-left: 8px;
 }
 
@@ -318,7 +379,7 @@
   margin: 0;
 }
 
-#shareDialog .el-button + .el-button {
+#shareDialog .el-button+.el-button {
   margin-left: 8px;
 }
 
@@ -343,177 +404,290 @@
 
 /* 高亮颜色样式 */
 .chrome-extension-mutihighlight-style-1 {
-  background-color: #eb4d4b !important;
-  color: #fff !important;
+  background-color: #ffff00 !important;
+  color: #000 !important;
 }
 
 .chrome-extension-mutihighlight-style-2 {
-  background-color: #000000 !important;
+  background-color: #ff0000 !important;
   color: #fff !important;
 }
 
 .chrome-extension-mutihighlight-style-3 {
-  background-color: #0000ff !important;
-  color: #fff !important;
-}
-
-.chrome-extension-mutihighlight-style-4 {
-  background-color: #8a2be2 !important;
-  color: #fff !important;
-}
-
-.chrome-extension-mutihighlight-style-5 {
-  background-color: #a52a2a !important;
-  color: #fff !important;
-}
-
-.chrome-extension-mutihighlight-style-6 {
-  background-color: #fa541c !important;
-  color: #fff !important;
-}
-
-.chrome-extension-mutihighlight-style-7 {
-  background-color: #4834d4 !important;
-  color: #fff !important;
-}
-
-.chrome-extension-mutihighlight-style-8 {
-  background-color: #05c46b !important;
-  color: #fff !important;
-}
-
-.chrome-extension-mutihighlight-style-9 {
-  background-color: #d2691e !important;
-  color: #fff !important;
-}
-
-.chrome-extension-mutihighlight-style-10 {
-  background-color: #6495ed !important;
-  color: #fff !important;
-}
-
-.chrome-extension-mutihighlight-style-11 {
-  background-color: #006400 !important;
-  color: #fff !important;
-}
-
-.chrome-extension-mutihighlight-style-12 {
-  background-color: #2c2c54 !important;
-  color: #fff !important;
-}
-
-.chrome-extension-mutihighlight-style-13 {
-  background-color: #ff1493 !important;
-  color: #fff !important;
-}
-
-.chrome-extension-mutihighlight-style-14 {
-  background-color: #f0ac11 !important;
-  color: #fff !important;
-}
-
-.chrome-extension-mutihighlight-style-15 {
-  background-color: #ff69b4 !important;
-  color: #fff !important;
-}
-
-.chrome-extension-mutihighlight-style-16 {
   background-color: #4b0082 !important;
   color: #fff !important;
 }
 
-.chrome-extension-mutihighlight-style-17 {
+.chrome-extension-mutihighlight-style-4 {
+  background-color: #00b050 !important;
+  color: #000 !important;
+}
+
+.chrome-extension-mutihighlight-style-5 {
+  background-color: #191970 !important;
+  color: #fff !important;
+}
+
+.chrome-extension-mutihighlight-style-6 {
+  background-color: #8b4513 !important;
+  color: #fff !important;
+}
+
+.chrome-extension-mutihighlight-style-7 {
+  background-color: #800000 !important;
+  color: #fff !important;
+}
+
+.chrome-extension-mutihighlight-style-8 {
+  background-color: #4834d4 !important;
+  color: #fff !important;
+}
+
+.chrome-extension-mutihighlight-style-9 {
+  background-color: #8a2be2 !important;
+  color: #fff !important;
+}
+
+.chrome-extension-mutihighlight-style-10 {
+  background-color: #a52a2a !important;
+  color: #fff !important;
+}
+
+.chrome-extension-mutihighlight-style-11 {
   background-color: #b33771 !important;
   color: #fff !important;
 }
 
-.chrome-extension-mutihighlight-style-18 {
+.chrome-extension-mutihighlight-style-12 {
   background-color: #ba55d3 !important;
   color: #fff !important;
 }
 
+.chrome-extension-mutihighlight-style-13 {
+  background-color: #699e07 !important;
+  color: #fff !important;
+}
+
+.chrome-extension-mutihighlight-style-14 {
+  background-color: #eb4d4b !important;
+  color: #fff !important;
+}
+
+.chrome-extension-mutihighlight-style-15 {
+  background-color: #fa541c !important;
+  color: #fff !important;
+}
+
+.chrome-extension-mutihighlight-style-16 {
+  background-color: #ff1493 !important;
+  color: #fff !important;
+}
+
+.chrome-extension-mutihighlight-style-17 {
+  background-color: #0070c0 !important;
+  color: #fff !important;
+}
+
+.chrome-extension-mutihighlight-style-18 {
+  background-color: #002060 !important;
+  color: #fff !important;
+}
+
 .chrome-extension-mutihighlight-style-19 {
-  background-color: #9acd32 !important;
+  background-color: #0000ff !important;
   color: #fff !important;
 }
 
 .chrome-extension-mutihighlight-style-20 {
-  background-color: red !important;
+  background-color: #008080 !important;
+  color: #fff !important;
+}
+
+.chrome-extension-mutihighlight-style-21 {
+  background-color: #1e88e5 !important;
+  color: #fff !important;
+}
+
+.chrome-extension-mutihighlight-style-22 {
+  background-color: #6a1b9a !important;
+  color: #fff !important;
+}
+
+.chrome-extension-mutihighlight-style-23 {
+  background-color: #d84315 !important;
+  color: #fff !important;
+}
+
+.chrome-extension-mutihighlight-style-24 {
+  background-color: #2e7d32 !important;
+  color: #fff !important;
+}
+
+.chrome-extension-mutihighlight-style-25 {
+  background-color: #283593 !important;
+  color: #fff !important;
+}
+
+.chrome-extension-mutihighlight-style-26 {
+  background-color: #ad1457 !important;
+  color: #fff !important;
+}
+
+.chrome-extension-mutihighlight-style-27 {
+  background-color: #4527a0 !important;
+  color: #fff !important;
+}
+
+.chrome-extension-mutihighlight-style-28 {
+  background-color: #00695c !important;
+  color: #fff !important;
+}
+
+.chrome-extension-mutihighlight-style-29 {
+  background-color: #5d4037 !important;
+  color: #fff !important;
+}
+
+.chrome-extension-mutihighlight-style-30 {
+  background-color: #455a64 !important;
   color: #fff !important;
 }
 
 /* 确保颜色选择器中的颜色样本使用相同的颜色 */
 .color-picker__item.chrome-extension-mutihighlight-style-1 {
-  background-color: #eb4d4b !important;
+  background-color: var(--highlight-color-1) !important;
+  color: #000 !important;
 }
+
 .color-picker__item.chrome-extension-mutihighlight-style-2 {
-  background-color: #000000 !important;
+  background-color: var(--highlight-color-2) !important;
 }
+
 .color-picker__item.chrome-extension-mutihighlight-style-3 {
-  background-color: #0000ff !important;
+  background-color: var(--highlight-color-3) !important;
 }
+
 .color-picker__item.chrome-extension-mutihighlight-style-4 {
-  background-color: #8a2be2 !important;
+  background-color: var(--highlight-color-4) !important;
+  color: #000 !important;
 }
+
 .color-picker__item.chrome-extension-mutihighlight-style-5 {
-  background-color: #a52a2a !important;
+  background-color: var(--highlight-color-5) !important;
 }
+
 .color-picker__item.chrome-extension-mutihighlight-style-6 {
-  background-color: #fa541c !important;
+  background-color: var(--highlight-color-6) !important;
 }
+
 .color-picker__item.chrome-extension-mutihighlight-style-7 {
-  background-color: #4834d4 !important;
+  background-color: var(--highlight-color-7) !important;
 }
+
 .color-picker__item.chrome-extension-mutihighlight-style-8 {
-  background-color: #05c46b !important;
+  background-color: var(--highlight-color-8) !important;
 }
+
 .color-picker__item.chrome-extension-mutihighlight-style-9 {
-  background-color: #d2691e !important;
+  background-color: var(--highlight-color-9) !important;
 }
+
 .color-picker__item.chrome-extension-mutihighlight-style-10 {
-  background-color: #6495ed !important;
+  background-color: var(--highlight-color-10) !important;
 }
+
 .color-picker__item.chrome-extension-mutihighlight-style-11 {
-  background-color: #006400 !important;
+  background-color: var(--highlight-color-11) !important;
 }
+
 .color-picker__item.chrome-extension-mutihighlight-style-12 {
-  background-color: #2c2c54 !important;
+  background-color: var(--highlight-color-12) !important;
 }
+
 .color-picker__item.chrome-extension-mutihighlight-style-13 {
-  background-color: #ff1493 !important;
+  background-color: var(--highlight-color-13) !important;
 }
+
 .color-picker__item.chrome-extension-mutihighlight-style-14 {
-  background-color: #f0ac11 !important;
+  background-color: var(--highlight-color-14) !important;
 }
+
 .color-picker__item.chrome-extension-mutihighlight-style-15 {
-  background-color: #ff69b4 !important;
+  background-color: var(--highlight-color-15) !important;
 }
+
 .color-picker__item.chrome-extension-mutihighlight-style-16 {
-  background-color: #4b0082 !important;
+  background-color: var(--highlight-color-16) !important;
 }
+
 .color-picker__item.chrome-extension-mutihighlight-style-17 {
-  background-color: #b33771 !important;
+  background-color: var(--highlight-color-17) !important;
 }
+
 .color-picker__item.chrome-extension-mutihighlight-style-18 {
-  background-color: #ba55d3 !important;
+  background-color: var(--highlight-color-18) !important;
 }
+
 .color-picker__item.chrome-extension-mutihighlight-style-19 {
-  background-color: #9acd32 !important;
+  background-color: var(--highlight-color-19) !important;
 }
+
 .color-picker__item.chrome-extension-mutihighlight-style-20 {
-  background-color: red !important;
+  background-color: var(--highlight-color-20) !important;
+}
+
+.color-picker__item.chrome-extension-mutihighlight-style-21 {
+  background-color: var(--highlight-color-21) !important;
+}
+
+.color-picker__item.chrome-extension-mutihighlight-style-22 {
+  background-color: var(--highlight-color-22) !important;
+}
+
+.color-picker__item.chrome-extension-mutihighlight-style-23 {
+  background-color: var(--highlight-color-23) !important;
+}
+
+.color-picker__item.chrome-extension-mutihighlight-style-24 {
+  background-color: var(--highlight-color-24) !important;
+}
+
+.color-picker__item.chrome-extension-mutihighlight-style-25 {
+  background-color: var(--highlight-color-25) !important;
+}
+
+.color-picker__item.chrome-extension-mutihighlight-style-26 {
+  background-color: var(--highlight-color-26) !important;
+}
+
+.color-picker__item.chrome-extension-mutihighlight-style-27 {
+  background-color: var(--highlight-color-27) !important;
+}
+
+.color-picker__item.chrome-extension-mutihighlight-style-28 {
+  background-color: var(--highlight-color-28) !important;
+}
+
+.color-picker__item.chrome-extension-mutihighlight-style-29 {
+  background-color: var(--highlight-color-29) !important;
+}
+
+.color-picker__item.chrome-extension-mutihighlight-style-30 {
+  background-color: var(--highlight-color-30) !important;
 }
 
 /* 在按钮样式部分添加 */
 .button-group .el-button {
   width: 60px;
-  flex: none; /* 防止按钮被拉伸 */
+  flex: none;
+  /* 防止按钮被拉伸 */
 }
 
 /* 添加更新按钮样式 */
 .update-btn {
   padding: 2px 6px;
-  margin: 0 2px; /* 从4px减小到2px */
+  margin: 0 2px;
+  /* 从4px减小到2px */
   border: 1px solid #dcdfe6;
   border-radius: 4px;
   background: white;
@@ -652,7 +826,7 @@
   margin-top: -8px;
 }
 
-.el-dialog__footer .el-button + .el-button {
+.el-dialog__footer .el-button+.el-button {
   margin-left: 8px;
 }
 
@@ -736,6 +910,7 @@
 .el-button--primary:hover {
   background: linear-gradient(to bottom, #66b1ff, #409eff);
   border-color: #66b1ff;
+  color: #fff;
 }
 
 /* 优化颜色选择器悬停效果 */
@@ -772,14 +947,16 @@
 }
 
 .button-group .el-button {
-  width: 72px; /* 适应图标的宽度 */
+  width: 72px;
+  /* 适应图标的宽度 */
   height: 32px;
   padding: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   font-size: 13px;
-  gap: 4px; /* 图标和文字间距 */
+  gap: 4px;
+  /* 图标和文字间距 */
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   background: var(--el-color-primary);
   border: 1px solid var(--el-color-primary);
@@ -808,7 +985,8 @@
 
 /* 添加图标样式 */
 .button-group .el-button {
-  gap: 4px; /* 添加图标和文字之间的间距 */
+  gap: 4px;
+  /* 添加图标和文字之间的间距 */
 }
 
 .button-group .icon {
@@ -837,7 +1015,8 @@
 
 /* 调整按钮宽度以适应图标 */
 .button-group .el-button {
-  width: 72px; /* 增加宽度以容纳图标 */
+  width: 72px;
+  /* 增加宽度以容纳图标 */
 }
 
 /* 搜索框样式 */
@@ -903,10 +1082,12 @@
     transform: scale(0, 0);
     opacity: 0.5;
   }
+
   20% {
     transform: scale(25, 25);
     opacity: 0.3;
   }
+
   100% {
     opacity: 0;
     transform: scale(40, 40);
@@ -971,13 +1152,15 @@
 .footer__info {
   display: flex;
   align-items: center;
-  white-space: nowrap; /* 确保不换行 */
+  white-space: nowrap;
+  /* 确保不换行 */
 }
 
 .footer__stats {
   display: flex;
   align-items: center;
-  gap: 3px; /* 从4px减小到3px */
+  gap: 3px;
+  /* 从4px减小到3px */
 }
 
 .footer__stats span {
@@ -988,21 +1171,24 @@
 .footer__right {
   display: flex;
   align-items: center;
-  margin-left: 6px; /* 右侧部分添加左边距 */
+  margin-left: 6px;
+  /* 右侧部分添加左边距 */
 }
 
 .footer__divider {
   width: 1px;
   height: 12px;
   background: #dcdfe6;
-  margin: 0 2px; /* 从4px减小到3px */
+  margin: 0 2px;
+  /* 从4px减小到3px */
 }
 
 .footer__developer {
   color: #909399;
   text-decoration: none;
   font-size: 10px;
-  white-space: nowrap; /* 再次确保不换行 */
+  white-space: nowrap;
+  /* 再次确保不换行 */
 }
 
 .footer__developer:hover {
@@ -1015,4 +1201,14 @@
   margin-top: 8px;
   padding-top: 8px;
   border-top: 1px dashed #ebeef5;
+}
+.colorBox {
+  position: fixed;
+  z-index: 9999;
+  background: #fff;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  padding: 12px;
+  left: 290px;
 }
