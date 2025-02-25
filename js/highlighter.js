@@ -450,92 +450,146 @@ class TextHighlighter {
     const text = node.textContent;
     if (!text) return;
 
-    // 检查父节点
+    // 检查父节点和缓存状态
     const parentElement = node.parentElement;
     if (!parentElement || this.shouldSkipNode(parentElement)) return;
 
-    // 检查缓存
-    const cacheKey = `${text}_${keywords.map(k => k.words || k).join('_')}`;
-    const cachedFragment = this.fragmentCache.get(node);
-    if (cachedFragment && cachedFragment.key === cacheKey) {
-      node.parentNode.replaceChild(cachedFragment.fragment.cloneNode(true), node);
-      return;
+    // 优化的缓存键生成
+    const cacheKey = this._generateCacheKey(text, keywords);
+    const cachedResult = this._getCachedResult(node, cacheKey);
+    if (cachedResult) {
+        node.parentNode.replaceChild(cachedResult.cloneNode(true), node);
+        return;
     }
 
-    // 创建匹配结果数组
-    const matches = [];
-    const usedRanges = [];
+    // 优化的关键词排序和匹配
+    const { matches, usedRanges } = this._findOptimizedMatches(text, keywords);
 
-    // 首先按长度排序关键词，优先匹配最长的
-    const sortedKeywords = [...keywords].sort((a, b) => {
-      const lenA = (a.words || a).length;
-      const lenB = (b.words || b).length;
-      return lenB - lenA;
-    });
+    // 如果没有匹配，记录到缓存并返回
+    if (matches.length === 0) {
+        this._cacheResult(node, cacheKey, node.cloneNode(true));
+        return;
+    }
 
-    // 查找所有匹配
-    for (const keyword of sortedKeywords) {
-      const keywordText = keyword.words || keyword;
-      let index = text.indexOf(keywordText);
+    // 创建高亮片段
+    const fragment = this._createOptimizedFragment(text, matches);
+    if (fragment) {
+        // 缓存处理结果
+        this._cacheResult(node, cacheKey, fragment.cloneNode(true));
+        // 替换原节点
+        node.parentNode.replaceChild(fragment, node);
+    }
+  }
 
-      while (index !== -1) {
-        const end = index + keywordText.length;
+  _generateCacheKey(text, keywords) {
+      // 优化的缓存键生成
+      const keywordKey = keywords.map(k => {
+          const word = k.words || k;
+          return typeof word === 'string' ? word : '';
+      }).sort().join('_');
+      return `${text}_${keywordKey}`;
+  }
 
-        // 使用二分查找优化重叠检查
-        if (!this._hasOverlap(usedRanges, index, end)) {
-          matches.push({
-            start: index,
-            end: end,
-            text: text.slice(index, end),
-            keyword: keyword,
-          });
-          usedRanges.push([index, end]);
-          usedRanges.sort((a, b) => a[0] - b[0]);
-        }
+  _getCachedResult(node, cacheKey) {
+      const cached = this.fragmentCache.get(node);
+      return cached && cached.key === cacheKey ? cached.fragment : null;
+  }
 
-        index = text.indexOf(keywordText, index + 1);
+  _cacheResult(node, cacheKey, fragment) {
+      // 使用 WeakMap 存储缓存，避免内存泄漏
+      this.fragmentCache.set(node, { key: cacheKey, fragment });
+  }
+
+  _findOptimizedMatches(text, keywords) {
+      const matches = [];
+      const usedRanges = [];
+  
+      // 按长度排序关键词
+      const sortedKeywords = this._sortKeywordsByLength(keywords);
+  
+      for (const keyword of sortedKeywords) {
+          const keywordText = keyword.words || keyword;
+          let index = text.indexOf(keywordText);
+  
+          while (index !== -1) {
+              const end = index + keywordText.length;
+              
+              // 使用优化的重叠检查
+              if (!this._hasOverlap(usedRanges, index, end)) {
+                  matches.push({
+                      start: index,
+                      end,
+                      text: text.slice(index, end),
+                      keyword
+                  });
+                  this._insertSortedRange(usedRanges, [index, end]);
+              }
+              index = text.indexOf(keywordText, index + 1);
+          }
       }
-    }
+  
+      return { matches: matches.sort((a, b) => a.start - b.start), usedRanges };
+  }
 
-    // 按起始位置排序
-    matches.sort((a, b) => a.start - b.start);
+  _sortKeywordsByLength(keywords) {
+      return [...keywords].sort((a, b) => {
+          const lenA = (a.words || a).length;
+          const lenB = (b.words || b).length;
+          return lenB - lenA;
+      });
+  }
 
-    // 处理匹配结果
-    if (matches.length > 0) {
-      // 创建文档片段
+  _insertSortedRange(ranges, newRange) {
+      // 二分查找插入位置
+      let left = 0;
+      let right = ranges.length;
+  
+      while (left < right) {
+          const mid = Math.floor((left + right) / 2);
+          if (ranges[mid][0] < newRange[0]) {
+              left = mid + 1;
+          } else {
+              right = mid;
+          }
+      }
+  
+      ranges.splice(left, 0, newRange);
+  }
+
+  _createOptimizedFragment(text, matches) {
+      if (!matches.length) return null;
+  
       const fragment = document.createDocumentFragment();
       let lastIndex = 0;
-
-      // 处理每个匹配
+  
       for (const match of matches) {
-        if (match.start > lastIndex) {
-          fragment.appendChild(
-            document.createTextNode(text.slice(lastIndex, match.start))
-          );
-        }
-
-        const highlight = document.createElement("span");
-        highlight.className = `${this.config.className} ${
-          this.config.stylePrefix
-        }${
-          typeof match.keyword === "object"
-            ? match.keyword.colour
-            : this._getColorIndex(match.keyword)
-        }`;
-        highlight.textContent = match.text;
-        fragment.appendChild(highlight);
-
-        lastIndex = match.end;
+          // 添加未匹配文本
+          if (match.start > lastIndex) {
+              fragment.appendChild(
+                  document.createTextNode(text.slice(lastIndex, match.start))
+              );
+          }
+  
+          // 创建高亮元素
+          const highlight = document.createElement("span");
+          highlight.className = this._getHighlightClassName(match.keyword);
+          highlight.textContent = match.text;
+          fragment.appendChild(highlight);
+  
+          lastIndex = match.end;
       }
-
-      // 处理剩余文本
+  
+      // 添加剩余文本
       if (lastIndex < text.length) {
-        fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+          fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
       }
+  
+      return fragment;
+  }
 
-      // 替换原节点
-      node.parentNode.replaceChild(fragment, node);
-    }
+  _getHighlightClassName(keyword) {
+      const colour = typeof keyword === "object" ? keyword.colour : this._getColorIndex(keyword);
+      return `${this.config.className} ${this.config.stylePrefix}${colour}`;
   }
 
   // 获取颜色索引

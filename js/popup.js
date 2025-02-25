@@ -558,14 +558,14 @@ $(function () {
     lastClickedIndex = currentIndex;
     colorBoxVisible = true;
 
-    // 计算位置
+    // 获取目标元素和视口信息
     const targetRect = this.getBoundingClientRect();
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
     const colorBoxWidth = $colorBox.outerWidth();
     const colorBoxHeight = $colorBox.outerHeight();
 
-    // 计算最佳位置，优先显示在点击元素的下方
+    // 计算最佳位置
     let top = targetRect.bottom + 5;
     let left = targetRect.left;
 
@@ -582,13 +582,13 @@ $(function () {
       left = 5;
     }
 
-    // 设置位置并显示，移除动画效果
+    // 设置位置并显示
     $colorBox
       .css({
-        position: "absolute",
+        position: "fixed",
         top: `${Math.max(5, top)}px`,
         left: `${left}px`,
-        zIndex: 1000,
+        zIndex: 1000
       })
       .show();
   });
@@ -1613,7 +1613,7 @@ $(function () {
 
       // 添加时间戳防止缓存
       const response = await fetch(
-        "https://gengxin.geluman.cn/update.json?" + Date.now(),
+        "https://gengxin.geluman.cn/version.json?" + Date.now(),
         {
           method: "GET",
           headers: {
