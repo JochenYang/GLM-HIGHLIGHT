@@ -33,26 +33,15 @@ class TextHighlighter {
         const oldestKey = this.patternCacheOrder.shift();
         this.patternCache.delete(oldestKey);
       }
-      
-      // 定期清理无效的fragmentCache引用
-      if (this.fragmentCache instanceof WeakMap) {
-        // WeakMap会自动清理失去引用的对象，无需手动清理
-        // 但我们可以通过重新创建来确保内存使用最优
-        if (Math.random() < 0.1) { // 10%概率执行完全重置
-          this.fragmentCache = new WeakMap();
-        }
-      }
     };
 
     // 定期清理
-    setInterval(cleanupCache, 10000); // 每10秒检查一次，比原来更频繁
+    setInterval(cleanupCache, 30000); // 每30秒检查一次
   }
 
   clearCache() {
     this.nodeStates = new WeakMap();
     this.patternCache.clear();
-    this.patternCacheOrder = [];
-    this.fragmentCache = new WeakMap();
   }
 
   // 修改文本节点合并逻辑
@@ -375,68 +364,41 @@ class TextHighlighter {
 
       // 获取所有高亮元素
       const highlights = node.getElementsByClassName(this.config.className);
-      if (!highlights || highlights.length === 0) return;
 
-      // 批量收集需要处理的高亮元素，避免DOM频繁重排
-      const highlightsArray = Array.from(highlights);
-      if (highlightsArray.length === 0) return;
+      // 使用批处理清理高亮
+      Array.from(highlights).forEach((highlight) => {
+        if (!highlight || !highlight.parentNode) return;
 
-      // 使用文档片段减少DOM操作
-      const processHighlights = () => {
-        // 按照父节点分组处理，减少DOM操作次数
-        const parentGroups = new Map();
-        
-        highlightsArray.forEach(highlight => {
-          if (!highlight || !highlight.parentNode) return;
-          
-          const parent = highlight.parentNode;
-          if (!parentGroups.has(parent)) {
-            parentGroups.set(parent, []);
-          }
-          parentGroups.get(parent).push(highlight);
-        });
-        
-        // 按组处理高亮元素
-        parentGroups.forEach((highlights, parent) => {
-          // 使用文档片段一次性替换
-          const fragment = document.createDocumentFragment();
-          let lastNode = null;
-          let textAccumulator = "";
-          
-          // 收集所有子节点
-          Array.from(parent.childNodes).forEach(child => {
-            if (highlights.includes(child)) {
-              // 这是一个高亮节点，收集其文本
-              textAccumulator += child.textContent;
-            } else if (child.nodeType === Node.TEXT_NODE) {
-              // 这是一个文本节点，收集其文本
-              textAccumulator += child.textContent;
-            } else {
-              // 这是其他节点，先处理之前累积的文本
-              if (textAccumulator) {
-                fragment.appendChild(document.createTextNode(textAccumulator));
-                textAccumulator = "";
-              }
-              // 保留非高亮节点
-              fragment.appendChild(child.cloneNode(true));
-            }
-          });
-          
-          // 处理最后剩余的文本
-          if (textAccumulator) {
-            fragment.appendChild(document.createTextNode(textAccumulator));
-          }
-          
-          // 清空原父节点并添加处理后的内容
-          while (parent.firstChild) {
-            parent.removeChild(parent.firstChild);
-          }
-          parent.appendChild(fragment);
-        });
-      };
-      
-      // 执行处理
-      processHighlights();
+        // 获取高亮文本
+        const text = highlight.textContent;
+
+        // 处理相邻文本节点
+        if (
+          highlight.previousSibling?.nodeType === Node.TEXT_NODE &&
+          highlight.nextSibling?.nodeType === Node.TEXT_NODE
+        ) {
+          // 合并前后文本节点
+          highlight.previousSibling.nodeValue =
+            highlight.previousSibling.nodeValue +
+            text +
+            highlight.nextSibling.nodeValue;
+          highlight.nextSibling.remove();
+        } else if (highlight.previousSibling?.nodeType === Node.TEXT_NODE) {
+          // 合并前面的文本节点
+          highlight.previousSibling.nodeValue += text;
+        } else if (highlight.nextSibling?.nodeType === Node.TEXT_NODE) {
+          // 合并后面的文本节点
+          highlight.nextSibling.nodeValue =
+            text + highlight.nextSibling.nodeValue;
+        } else {
+          // 创建新的文本节点
+          const textNode = document.createTextNode(text);
+          highlight.parentNode.insertBefore(textNode, highlight);
+        }
+
+        // 移除高亮元素
+        highlight.remove();
+      });
 
       // 清理空的 span 标签
       this._cleanEmptySpans(node);
@@ -444,7 +406,6 @@ class TextHighlighter {
       // 清理缓存
       this.nodeStates = new WeakMap();
       this.patternCache.clear();
-      this.fragmentCache = new WeakMap();
     } catch (error) {
       console.error("清理高亮失败:", error);
     }
@@ -495,19 +456,6 @@ class TextHighlighter {
     // 检查父节点
     const parentElement = node.parentElement;
     if (!parentElement || this.shouldSkipNode(parentElement)) return;
-    
-    // 快速检查是否有任何关键词在文本中
-    let hasMatch = false;
-    for (const keyword of keywords) {
-      const keywordText = keyword.words || keyword;
-      if (text.includes(keywordText)) {
-        hasMatch = true;
-        break;
-      }
-    }
-    
-    // 如果没有匹配，直接返回，避免不必要的处理
-    if (!hasMatch) return;
 
     // 检查缓存
     const cacheKey = `${text}_${keywords.map((k) => k.words || k).join("_")}`;
@@ -551,27 +499,47 @@ class TextHighlighter {
           usedRanges.sort((a, b) => a[0] - b[0]);
         }
 
-        // 继续查找下一个匹配
         index = text.indexOf(keywordText, index + 1);
       }
     }
 
-    // 如果没有匹配，直接返回
-    if (matches.length === 0) return;
-
-    // 按开始位置排序匹配结果
+    // 按起始位置排序
     matches.sort((a, b) => a.start - b.start);
 
-    // 创建高亮片段
-    const fragment = this._createHighlightFragment(text, matches);
-    if (fragment) {
-      // 缓存片段以便重用
-      this.fragmentCache.set(node, {
-        key: cacheKey,
-        fragment: fragment.cloneNode(true),
-      });
+    // 处理匹配结果
+    if (matches.length > 0) {
+      // 创建文档片段
+      const fragment = document.createDocumentFragment();
+      let lastIndex = 0;
 
-      // 替换原始节点
+      // 处理每个匹配
+      for (const match of matches) {
+        if (match.start > lastIndex) {
+          fragment.appendChild(
+            document.createTextNode(text.slice(lastIndex, match.start))
+          );
+        }
+
+        const highlight = document.createElement("span");
+        highlight.className = `${this.config.className} ${
+          this.config.stylePrefix
+        }${
+          typeof match.keyword === "object"
+            ? match.keyword.colour
+            : this._getColorIndex(match.keyword)
+        }`;
+        highlight.textContent = match.text;
+        fragment.appendChild(highlight);
+
+        lastIndex = match.end;
+      }
+
+      // 处理剩余文本
+      if (lastIndex < text.length) {
+        fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+      }
+
+      // 替换原节点
       node.parentNode.replaceChild(fragment, node);
     }
   }
