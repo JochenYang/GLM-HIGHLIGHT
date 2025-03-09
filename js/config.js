@@ -39,6 +39,60 @@ const createHighlighterConfig = () => {
         }
         return false;
       },
+
+      // 统一的shouldSkipTag函数，可以处理node对象或tagName字符串
+      shouldSkipTag: function(input) {
+        // 处理null或undefined
+        if (!input) return false;
+        
+        // 确定tagName
+        let tagName;
+        if (typeof input === 'string') {
+          // 如果输入是字符串，直接使用
+          tagName = input;
+        } else if (input.tagName) {
+          // 如果输入是节点对象，获取其tagName
+          tagName = input.tagName;
+          
+          // 检查可编辑状态(从原始函数保留)
+          if (input.isContentEditable || 
+              (input.parentNode && input.parentNode.isContentEditable)) {
+            return true;
+          }
+        } else {
+          // 既不是字符串也不是有效节点
+          return false;
+        }
+        
+        // 转换为大写以便与数组比较
+        const upperTagName = tagName.toUpperCase();
+        
+        // 使用正则表达式检查常见的需要跳过的标签
+        if (/(script|style|noscript|iframe)/i.test(tagName)) {
+          return true;
+        }
+        
+        // 使用数组包含检查
+        if (["SCRIPT", "STYLE", "NOSCRIPT"].includes(upperTagName)) {
+          return true;
+        }
+        
+        return false;
+      },
+
+      // 改进的shouldSkipHighlighted函数
+      shouldSkipHighlighted: function(node, className, elementType = 'span') {
+        // 基本检查
+        if (!node || !node.classList) return false;
+        
+        // 检查类名是否包含
+        const hasClass = node.classList.contains(className);
+        
+        // 可选：检查标签名是否匹配(更接近jQuery的完整匹配)
+        const tagMatches = !elementType || node.tagName.toLowerCase() === elementType.toLowerCase();
+        
+        return hasClass && tagMatches;
+      },
     },
 
     // 精简后的性能配置

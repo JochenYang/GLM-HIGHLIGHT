@@ -200,9 +200,24 @@ window.Utils = {
     shouldSkipNode(node, config) {
       if (!node || !node.parentNode) return true;
       const parent = node.parentElement || node.parentNode;
+      
+      // 使用配置中的规则检查元素节点
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        // 使用配置的shouldSkipTag规则
+        if (config.filterRules.shouldSkipTag(node.tagName)) {
+          return true;
+        }
+        
+        // 使用配置的shouldSkipHighlighted规则
+        if (config.filterRules.shouldSkipHighlighted(node, config.className)) {
+          return true;
+        }
+      }
+      
+      // 检查父节点
       return (
         !parent ||
-        parent.classList?.contains(config.className) ||
+        config.filterRules.shouldSkipHighlighted(parent, config.className) ||
         config.filterRules.shouldSkipTag(parent.tagName) ||
         !config.filterRules.shouldAllowInput(parent) ||
         config.filterRules.isEditable(parent)

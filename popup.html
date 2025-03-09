@@ -1,339 +1,271 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <title>格鲁曼高亮插件</title>
-    <link rel="stylesheet" href="css/element-plus.css" />
-    <link rel="stylesheet" href="css/highlight.css" />
-    <style>
-      body {
-        width: 500px;
-        margin: 0;
-        padding: 16px;
-        font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-          Helvetica Neue, Arial, Noto Sans, sans-serif;
-        position: relative;
-        min-height: 300px;
-      }
 
-      .main-container {
-        flex: 1;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <title>格鲁曼高亮插件</title>
+  <link rel="stylesheet" href="css/element-plus.css" />
+  <link rel="stylesheet" href="css/highlight.css" />
+  <style>
+    body {
+      width: 500px;
+      margin: 0;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+        Helvetica Neue, Arial, Noto Sans, sans-serif;
+      position: relative;
+      min-height: 300px;
+    }
 
-      .header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 16px;
-        height: 32px;
-      }
+    .main-container {
+      flex: 1;
+    }
 
-      .logo {
-        height: 25px;
-        width: auto;
-        object-fit: contain;
-      }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      height: 32px;
+    }
 
-      .highlight-item {
-        margin-bottom: 16px;
-        border-radius: 4px;
-        border: 1px solid #ebeef5;
-        background-color: #fff;
-        padding: 16px;
-        cursor: move;
-        user-select: none;
-        position: relative;
-        transition: transform 0.2s, box-shadow 0.2s;
-      }
+    .logo {
+      height: 25px;
+      width: auto;
+      object-fit: contain;
+    }
 
-      .highlight-item.dragging {
-        opacity: 0.8;
-        transform: scale(1.02);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      }
+    .highlight-item {
+      margin-bottom: 16px;
+      border-radius: 4px;
+      border: 1px solid #ebeef5;
+      background-color: #fff;
+      padding: 16px;
+      cursor: move;
+      user-select: none;
+      position: relative;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
 
-      .highlight-item__header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 12px;
-      }
+    .highlight-item.dragging {
+      opacity: 0.8;
+      transform: scale(1.02);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
 
-      .highlight-item__name {
-        flex: 1;
-        margin-right: 12px;
-      }
+    .highlight-item__header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
 
-      .highlight-item__content textarea {
-        width: 100%;
-        min-height: 80px;
-        padding: 8px 12px;
-        border: 1px solid #dcdfe6;
-        border-radius: 4px;
-        resize: none;
-        font-size: 14px;
-        line-height: 1.5;
-        color: #606266;
-      }
+    .highlight-item__name {
+      flex: 1;
+      margin-right: 12px;
+    }
 
-      .footer {
-        height: 32px;
-        margin: 16px -16px 0;
-        padding: 0 16px;
-        background: #fff;
-        border-top: 1px solid #ebeef5;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .footer__info {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        width: 100%;
-        font-size: 12px;
-        color: #909399;
-      }
+    .highlight-item__content textarea {
+      width: 100%;
+      min-height: 80px;
+      padding: 8px 12px;
+      border: 1px solid #dcdfe6;
+      border-radius: 4px;
+      resize: none;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #606266;
+    }
 
-      .footer__stats {
-        display: flex;
-        align-items: center;
-        font-size: 13px;
-        gap: 12px;
-      }
+    .footer {
+      height: 32px;
+      margin: 16px -16px 0;
+      padding: 0 16px;
+      background: #fff;
+      border-top: 1px solid #ebeef5;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
 
-      .footer__divider {
-        width: 1px;
-        height: 12px;
-        margin: 0 12px;
-        background-color: #dcdfe6;
-      }
+    .footer__info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      font-size: 12px;
+      color: #909399;
+    }
 
-      .footer__developer {
-        color: #409eff;
-        text-decoration: none;
-        font-size: 13px;
-        font-weight: bold;
-        transition: color 0.3s;
-        line-height: 1;
-        padding: 0 2px;
-      }
+    .footer__stats {
+      display: flex;
+      align-items: center;
+      font-size: 13px;
+      gap: 12px;
+    }
 
-      .footer__developer:hover {
-        color: #66b1ff;
-      }
+    .footer__divider {
+      width: 1px;
+      height: 12px;
+      margin: 0 12px;
+      background-color: #dcdfe6;
+    }
 
-      .stats-container {
-        font-size: 12px;
-        color: #909399;
-        display: flex;
-        gap: 12px;
-      }
+    .footer__developer {
+      color: #409eff;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: bold;
+      transition: color 0.3s;
+      line-height: 1;
+      padding: 0 2px;
+    }
 
-      .update-btn {
-        margin-left: 8px;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="main-container">
-      <div class="header">
-        <img src="img/logo.png" class="logo" alt="格鲁曼高亮插件" />
-        <div class="el-switch" id="switcher" data-on="true">
-          <span class="el-switch__core"></span>
-        </div>
-      </div>
+    .footer__developer:hover {
+      color: #66b1ff;
+    }
 
-      <div class="button-group">
-        <button class="el-button el-button--primary" id="add">
-          <svg class="icon" viewBox="0 0 1024 1024">
-            <path
-              d="M480 480V128a32 32 0 0 1 64 0v352h352a32 32 0 0 1 0 64H544v352a32 32 0 0 1-64 0V544H128a32 32 0 0 1 0-64h352z"
-            />
-          </svg>
-          创建
-        </button>
-        <button class="el-button el-button--primary" id="manage">
-          <svg class="icon" viewBox="0 0 1024 1024">
-            <path
-              d="M280 752h80c4.4 0 8-3.6 8-8V280c0-4.4-3.6-8-8-8h-80c-4.4 0-8 3.6-8 8v464c0 4.4 3.6 8 8 8zm180-364c0-4.4 3.6-8 8-8h80c4.4 0 8 3.6 8 8v364c0 4.4-3.6 8-8 8h-80c-4.4 0-8-3.6-8-8V388zm180-80c0-4.4 3.6-8 8-8h80c4.4 0 8 3.6 8 8v444c0 4.4-3.6 8-8 8h-80c-4.4 0-8-3.6-8-8V308z"
-            />
-          </svg>
-          管理
-        </button>
-        <button class="el-button el-button--primary" id="dedupe">
-          <svg class="icon" viewBox="0 0 1024 1024">
-            <path
-              d="M128 416h768a32 32 0 0 1 0 64H128a32 32 0 0 1 0-64zm0 128h768a32 32 0 0 1 0 64H128a32 32 0 0 1 0-64z"
-            />
-          </svg>
-          去重
-        </button>
-        <button class="el-button el-button--primary" id="share">
-          <svg class="icon" viewBox="0 0 1024 1024">
-            <path
-              d="M752 664c-28.5 0-54.8 10-75.4 26.7L469.4 540.8a160.68 160.68 0 0 0 0-57.6l207.2-149.9C697.2 350 723.5 360 752 360c66.2 0 120-53.8 120-120s-53.8-120-120-120-120 53.8-120 120c0 11.6 1.6 22.7 4.7 33.3L439.9 415.8C410.7 377.1 364.3 352 312 352c-88.4 0-160 71.6-160 160s71.6 160 160 160c52.3 0 98.7-25.1 127.9-63.8l196.8 142.5c-3.1 10.6-4.7 21.8-4.7 33.3 0 66.2 53.8 120 120 120s120-53.8 120-120-53.8-120-120-120z"
-            />
-          </svg>
-          分享
-        </button>
-        <button class="el-button el-button--primary" id="export">
-          <svg class="icon" viewBox="0 0 1024 1024">
-            <path
-              d="M544 640V128a32 32 0 0 0-64 0v512L279.936 439.936a32 32 0 0 0-45.248 45.248l256 256a32 32 0 0 0 45.248 0l256-256a32 32 0 0 0-45.248-45.248L544 640zM128 832h768a32 32 0 0 0 0-64H128a32 32 0 0 0 0 64z"
-            />
-          </svg>
-          导出
-        </button>
-        <button class="el-button el-button--primary" id="import">
-          <svg class="icon" viewBox="0 0 1024 1024">
-            <path
-              d="M544 384V896a32 32 0 0 1-64 0V384L279.936 584.064a32 32 0 0 1-45.248-45.248l256-256a32 32 0 0 1 45.248 0l256 256a32 32 0 0 1-45.248 45.248L544 384zM128 192h768a32 32 0 0 1 0 64H128a32 32 0 0 1 0-64z"
-            />
-          </svg>
-          导入
-        </button>
-      </div>
+    .stats-container {
+      font-size: 12px;
+      color: #909399;
+      display: flex;
+      gap: 12px;
+    }
 
-      <div id="text-box"></div>
-    </div>
+    .update-btn {
+      margin-left: 8px;
+    }
+  </style>
+</head>
 
-    <div class="footer">
-      <div class="footer__info">
-        <div class="footer__stats">
-          <span>版本: 3.2.4</span>
-          <span>高亮词: 26</span>
-          <button id="checkUpdate" class="update-btn">检查更新</button>
-          <button id="showHelp" class="update-btn">使用说明</button>
-        </div>
-        <div class="footer__right">
-          <span class="footer__divider"></span>
-          <a class="footer__developer" id="support-link" href="#support-link"
-            >Developer By Yangquancheng</a
-          >
-        </div>
+<body>
+  <div class="main-container">
+    <div class="header">
+      <img src="img/logo.png" class="logo" alt="格鲁曼高亮插件" />
+      <div class="el-switch" id="switcher" data-on="true">
+        <span class="el-switch__core"></span>
       </div>
     </div>
 
-    <input id="fileInput" type="file" accept=".json" style="display: none" />
+    <div class="button-group">
+      <button class="el-button el-button--primary" id="add">
+        <svg class="icon" viewBox="0 0 1024 1024">
+          <path
+            d="M480 480V128a32 32 0 0 1 64 0v352h352a32 32 0 0 1 0 64H544v352a32 32 0 0 1-64 0V544H128a32 32 0 0 1 0-64h352z" />
+        </svg>
+        创建
+      </button>
+      <button class="el-button el-button--primary" id="manage">
+        <svg class="icon" viewBox="0 0 1024 1024">
+          <path
+            d="M280 752h80c4.4 0 8-3.6 8-8V280c0-4.4-3.6-8-8-8h-80c-4.4 0-8 3.6-8 8v464c0 4.4 3.6 8 8 8zm180-364c0-4.4 3.6-8 8-8h80c4.4 0 8 3.6 8 8v364c0 4.4-3.6 8-8 8h-80c-4.4 0-8-3.6-8-8V388zm180-80c0-4.4 3.6-8 8-8h80c4.4 0 8 3.6 8 8v444c0 4.4-3.6 8-8 8h-80c-4.4 0-8-3.6-8-8V308z" />
+        </svg>
+        管理
+      </button>
+      <button class="el-button el-button--primary" id="dedupe">
+        <svg class="icon" viewBox="0 0 1024 1024">
+          <path
+            d="M128 416h768a32 32 0 0 1 0 64H128a32 32 0 0 1 0-64zm0 128h768a32 32 0 0 1 0 64H128a32 32 0 0 1 0-64z" />
+        </svg>
+        去重
+      </button>
+      <button class="el-button el-button--primary" id="share">
+        <svg class="icon" viewBox="0 0 1024 1024">
+          <path
+            d="M752 664c-28.5 0-54.8 10-75.4 26.7L469.4 540.8a160.68 160.68 0 0 0 0-57.6l207.2-149.9C697.2 350 723.5 360 752 360c66.2 0 120-53.8 120-120s-53.8-120-120-120-120 53.8-120 120c0 11.6 1.6 22.7 4.7 33.3L439.9 415.8C410.7 377.1 364.3 352 312 352c-88.4 0-160 71.6-160 160s71.6 160 160 160c52.3 0 98.7-25.1 127.9-63.8l196.8 142.5c-3.1 10.6-4.7 21.8-4.7 33.3 0 66.2 53.8 120 120 120s120-53.8 120-120-53.8-120-120-120z" />
+        </svg>
+        分享
+      </button>
+      <button class="el-button el-button--primary" id="export">
+        <svg class="icon" viewBox="0 0 1024 1024">
+          <path
+            d="M544 640V128a32 32 0 0 0-64 0v512L279.936 439.936a32 32 0 0 0-45.248 45.248l256 256a32 32 0 0 0 45.248 0l256-256a32 32 0 0 0-45.248-45.248L544 640zM128 832h768a32 32 0 0 0 0-64H128a32 32 0 0 0 0 64z" />
+        </svg>
+        导出
+      </button>
+      <button class="el-button el-button--primary" id="import">
+        <svg class="icon" viewBox="0 0 1024 1024">
+          <path
+            d="M544 384V896a32 32 0 0 1-64 0V384L279.936 584.064a32 32 0 0 1-45.248-45.248l256-256a32 32 0 0 1 45.248 0l256 256a32 32 0 0 1-45.248 45.248L544 384zM128 192h768a32 32 0 0 1 0 64H128a32 32 0 0 1 0-64z" />
+        </svg>
+        导入
+      </button>
+    </div>
 
-    <script src="js/jquery.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/config.js"></script>
-    <script src="js/highlighter.js"></script>
-    <script src="js/popup.js"></script>
+    <div id="text-box"></div>
+  </div>
 
-    <div id="updateDialog" class="el-dialog" style="display: none">
-      <div class="el-dialog__header">
-        <h3>检查更新</h3>
+  <div class="footer">
+    <div class="footer__info">
+      <div class="footer__stats">
+        <span>版本: 3.2.5</span>
+        <span>高亮词: 26</span>
+        <button id="checkUpdate" class="update-btn">检查更新</button>
+        <button id="showHelp" class="update-btn">使用说明</button>
       </div>
-      <div class="el-dialog__body">
-        <div id="updateContent"></div>
-      </div>
-      <div class="el-dialog__footer">
-        <button id="closeUpdateDialog" class="el-button">关闭</button>
-        <button
-          id="downloadUpdate"
-          class="el-button el-button--primary"
-          style="display: none"
-        >
-          下载更新
-        </button>
+      <div class="footer__right">
+        <span class="footer__divider"></span>
+        <a class="footer__developer" id="support-link" href="#support-link">Developer By Yangquancheng</a>
       </div>
     </div>
-    <div id="overlay" style="display: none"></div>
-    <div class="colorBox" style="display: none">
-      <div class="color-picker__grid">
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-1"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-2"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-3"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-4"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-5"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-6"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-7"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-8"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-9"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-10"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-11"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-12"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-13"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-14"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-15"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-16"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-17"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-18"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-19"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-20"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-21"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-22"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-23"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-24"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-25"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-26"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-27"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-28"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-29"
-        ></div>
-        <div
-          class="color-picker__item chrome-extension-mutihighlight-style-30"
-        ></div>
-      </div>
+  </div>
+
+  <input id="fileInput" type="file" accept=".json" style="display: none" />
+
+  <script src="js/jquery.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/config.js"></script>
+  <script src="js/highlighter.js"></script>
+  <script src="js/popup.js"></script>
+
+  <div id="updateDialog" class="el-dialog" style="display: none">
+    <div class="el-dialog__header">
+      <h3>检查更新</h3>
     </div>
-  </body>
+    <div class="el-dialog__body">
+      <div id="updateContent"></div>
+    </div>
+    <div class="el-dialog__footer">
+      <button id="closeUpdateDialog" class="el-button">关闭</button>
+      <button id="downloadUpdate" class="el-button el-button--primary" style="display: none">
+        下载更新
+      </button>
+    </div>
+  </div>
+  <div id="overlay" style="display: none"></div>
+  <div class="colorBox" style="display: none">
+    <div class="color-picker__grid">
+      <div class="color-picker__item chrome-extension-mutihighlight-style-1"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-2"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-3"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-4"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-5"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-6"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-7"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-8"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-9"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-10"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-11"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-12"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-13"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-14"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-15"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-16"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-17"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-18"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-19"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-20"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-21"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-22"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-23"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-24"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-25"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-26"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-27"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-28"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-29"></div>
+      <div class="color-picker__item chrome-extension-mutihighlight-style-30"></div>
+    </div>
+  </div>
+</body>
+
 </html>

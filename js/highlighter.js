@@ -13,6 +13,10 @@ class TextHighlighter {
       className: this.config.className,
       stylePrefix: this.config.stylePrefix,
       batchSize: this.config.performance.batch.size,
+      wordsOnly: false,           // 新增：是否只匹配完整单词
+      wordsBoundary: '\\b',       // 新增：单词边界正则
+      ignoreDiacritics: false,    // 新增：是否忽略变音符号
+      highlightCallback: null,    // 新增：高亮回调函数
       ...options,
     };
 
@@ -104,8 +108,9 @@ class TextHighlighter {
     }
   }
 
-  // 统一的节点检查
+  // 简化的节点跳过逻辑，避免重复检查
   shouldSkipNode(node) {
+    // 直接使用Utils.dom中的统一检查逻辑
     return Utils.dom.shouldSkipNode(node, this.config);
   }
 
@@ -181,8 +186,14 @@ class TextHighlighter {
   _getSearchPattern(keyword) {
     if (!keyword) return null;
 
-    // 使用关键词和大小写选项作为缓存键
-    const cacheKey = `${keyword}_${this.options.caseSensitive}`;
+    // 处理变音符号
+    let processedKeyword = keyword;
+    if (this.options.ignoreDiacritics) {
+      processedKeyword = this._removeDiacritics(keyword);
+    }
+
+    // 使用关键词和选项作为缓存键
+    const cacheKey = `${processedKeyword}_${this.options.caseSensitive}_${this.options.wordsOnly}`;
     if (this.patternCache.has(cacheKey)) {
       // 更新 LRU 顺序
       const index = this.patternCacheOrder.indexOf(cacheKey);
@@ -194,7 +205,12 @@ class TextHighlighter {
     }
 
     // 转义特殊字符
-    const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    let escapedKeyword = processedKeyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    
+    // 添加单词边界
+    if (this.options.wordsOnly) {
+      escapedKeyword = `${this.options.wordsBoundary}${escapedKeyword}${this.options.wordsBoundary}`;
+    }
 
     // 根据配置决定是否大小写敏感
     const flags = this.options.caseSensitive ? "g" : "gi";
@@ -332,6 +348,11 @@ class TextHighlighter {
       // 将高亮元素添加到片段中
       fragment.appendChild(highlight);
 
+      // 添加回调支持
+      if (typeof this.options.highlightCallback === 'function') {
+        this.options.highlightCallback(highlight, match);
+      }
+
       // 更新处理位置
       lastIndex = match.end;
     }
@@ -345,12 +366,6 @@ class TextHighlighter {
     }
 
     return fragment;
-  }
-
-  // 优化的节点过滤
-  _shouldSkipNode(node) {
-    // 使用相同的检查逻辑
-    return this.shouldSkipNode(node);
   }
 
   // 清理空的高亮 span 标签
@@ -377,69 +392,32 @@ class TextHighlighter {
       const highlights = node.getElementsByClassName(this.config.className);
       if (!highlights || highlights.length === 0) return;
 
-      // 批量收集需要处理的高亮元素，避免DOM频繁重排
+      // 使用类似jQuery flatten的方法处理高亮元素
       const highlightsArray = Array.from(highlights);
-      if (highlightsArray.length === 0) return;
-
-      // 使用文档片段减少DOM操作
-      const processHighlights = () => {
-        // 按照父节点分组处理，减少DOM操作次数
-        const parentGroups = new Map();
-        
-        highlightsArray.forEach(highlight => {
-          if (!highlight || !highlight.parentNode) return;
-          
-          const parent = highlight.parentNode;
-          if (!parentGroups.has(parent)) {
-            parentGroups.set(parent, []);
-          }
-          parentGroups.get(parent).push(highlight);
-        });
-        
-        // 按组处理高亮元素
-        parentGroups.forEach((highlights, parent) => {
-          // 使用文档片段一次性替换
-          const fragment = document.createDocumentFragment();
-          let lastNode = null;
-          let textAccumulator = "";
-          
-          // 收集所有子节点
-          Array.from(parent.childNodes).forEach(child => {
-            if (highlights.includes(child)) {
-              // 这是一个高亮节点，收集其文本
-              textAccumulator += child.textContent;
-            } else if (child.nodeType === Node.TEXT_NODE) {
-              // 这是一个文本节点，收集其文本
-              textAccumulator += child.textContent;
-            } else {
-              // 这是其他节点，先处理之前累积的文本
-              if (textAccumulator) {
-                fragment.appendChild(document.createTextNode(textAccumulator));
-                textAccumulator = "";
-              }
-              // 保留非高亮节点
-              fragment.appendChild(child.cloneNode(true));
-            }
-          });
-          
-          // 处理最后剩余的文本
-          if (textAccumulator) {
-            fragment.appendChild(document.createTextNode(textAccumulator));
-          }
-          
-          // 清空原父节点并添加处理后的内容
-          while (parent.firstChild) {
-            parent.removeChild(parent.firstChild);
-          }
-          parent.appendChild(fragment);
-        });
-      };
       
-      // 执行处理
-      processHighlights();
-
-      // 清理空的 span 标签
-      this._cleanEmptySpans(node);
+      // 按父节点分组，减少normalize()调用次数
+      const parentMap = new Map();
+      
+      highlightsArray.forEach(highlight => {
+        if (!highlight || !highlight.parentNode) return;
+        
+        const parent = highlight.parentNode;
+        if (!parentMap.has(parent)) {
+          parentMap.set(parent, true);
+        }
+        
+        // 直接替换高亮元素为其子节点
+        const fragment = document.createDocumentFragment();
+        while (highlight.firstChild) {
+          fragment.appendChild(highlight.firstChild);
+        }
+        highlight.parentNode.replaceChild(fragment, highlight);
+      });
+      
+      // 对所有涉及的父节点调用normalize()
+      parentMap.forEach((_, parent) => {
+        parent.normalize();
+      });
 
       // 清理缓存
       this.nodeStates = new WeakMap();
@@ -454,34 +432,23 @@ class TextHighlighter {
   cleanHighlightState(node) {
     try {
       if (!node || !node.parentNode) return;
-
-      // 1. 收集相邻文本节点
-      const prevNode = node.previousSibling;
-      const nextNode = node.nextSibling;
-      const text = node.textContent;
-
-      // 2. 直接修改文本内容
-      if (
-        prevNode?.nodeType === Node.TEXT_NODE &&
-        nextNode?.nodeType === Node.TEXT_NODE
-      ) {
-        // 合并相邻文本节点
-        prevNode.nodeValue = prevNode.nodeValue + text + nextNode.nodeValue;
-        nextNode.remove();
-      } else if (prevNode?.nodeType === Node.TEXT_NODE) {
-        prevNode.nodeValue = prevNode.nodeValue + text;
-      } else if (nextNode?.nodeType === Node.TEXT_NODE) {
-        nextNode.nodeValue = text + nextNode.nodeValue;
-      } else {
-        // 创建新文本节点
-        const textNode = document.createTextNode(text);
-        node.parentNode.insertBefore(textNode, node);
+      
+      // 创建文档片段
+      const fragment = document.createDocumentFragment();
+      
+      // 复制高亮节点的内容到片段
+      while (node.firstChild) {
+        fragment.appendChild(node.firstChild);
       }
-
-      // 3. 移除高亮节点
-      node.remove();
+      
+      // 替换高亮节点
+      node.parentNode.replaceChild(fragment, node);
+      
+      // 使用normalize()合并相邻文本节点，与clearHighlight保持一致
+      node.parentNode.normalize();
+      
     } catch (error) {
-      console.error("清理高亮状态失败:", error);
+      console.error("清理单个高亮失败:", error);
     }
   }
 
@@ -584,6 +551,29 @@ class TextHighlighter {
       this.patternCache.set(keyword, index);
     }
     return index;
+  }
+
+  // 添加变音符号处理
+  _removeDiacritics(text) {
+    return text
+      .replace(/[\u00c0-\u00c6]/g, 'A')
+      .replace(/[\u00e0-\u00e6]/g, 'a')
+      .replace(/[\u00c7]/g, 'C')
+      .replace(/[\u00e7]/g, 'c')
+      .replace(/[\u00c8-\u00cb]/g, 'E')
+      .replace(/[\u00e8-\u00eb]/g, 'e')
+      .replace(/[\u00cc-\u00cf]/g, 'I')
+      .replace(/[\u00ec-\u00ef]/g, 'i')
+      .replace(/[\u00d1|\u0147]/g, 'N')
+      .replace(/[\u00f1|\u0148]/g, 'n')
+      .replace(/[\u00d2-\u00d8|\u0150]/g, 'O')
+      .replace(/[\u00f2-\u00f8|\u0151]/g, 'o')
+      .replace(/[\u0160]/g, 'S')
+      .replace(/[\u0161]/g, 's')
+      .replace(/[\u00d9-\u00dc]/g, 'U')
+      .replace(/[\u00f9-\u00fc]/g, 'u')
+      .replace(/[\u00dd]/g, 'Y')
+      .replace(/[\u00fd]/g, 'y');
   }
 }
 
