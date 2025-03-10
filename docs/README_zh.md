@@ -8,7 +8,7 @@
   </h2>
 </div>
 
-[![版本](https://img.shields.io/badge/版本-1.0.7-blue.svg)](https://github.com/JochenYang/GLM-HIGHLIGHT/releases)
+[![版本](https://img.shields.io/badge/版本-1.0.8-blue.svg)](https://github.com/JochenYang/GLM-HIGHLIGHT/releases)
 [![许可](https://img.shields.io/badge/许可-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![欢迎PR](https://img.shields.io/badge/PR-welcome-brightgreen.svg)](https://github.com/JochenYang/GLM-HIGHLIGHT/pulls)
 [![问题](https://img.shields.io/badge/issues-welcome-orange.svg)](https://github.com/JochenYang/GLM-HIGHLIGHT/issues)
