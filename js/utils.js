@@ -15,72 +15,24 @@ window.Utils = {
     // 可以添加错误上报等功能
   },
 
-  // 优化的防抖函数
-  debounce(func, wait, options = {}) {
+  // 简化防抖函数
+  debounce(func, wait) {
     let timeout;
-    let lastArgs;
-    let lastThis;
-    let result;
-
-    const leading = options.leading === true;
-    const trailing = options.trailing !== false;
-
-    return function (...args) {
-      lastArgs = args;
-      lastThis = this;
-
-      if (!timeout && leading) {
-        result = func.apply(lastThis, lastArgs);
-      }
-
+    return function(...args) {
       clearTimeout(timeout);
-
-      timeout = setTimeout(() => {
-        if (trailing && lastArgs) {
-          result = func.apply(lastThis, lastArgs);
-        }
-        timeout = null;
-        lastArgs = null;
-        lastThis = null;
-      }, wait);
-
-      return result;
+      timeout = setTimeout(() => func.apply(this, args), wait);
     };
   },
 
-  // 优化的节流函数
-  throttle(func, limit, options = {}) {
+  // 简化节流函数
+  throttle(func, limit) {
     let inThrottle;
-    let lastResult;
-    let lastTime = 0;
-
-    const leading = options.leading !== false;
-    const trailing = options.trailing !== false;
-
-    return function (...args) {
-      const now = Date.now();
-
-      if (!inThrottle && leading) {
-        lastResult = func.apply(this, args);
-        lastTime = now;
+    return function(...args) {
+      if (!inThrottle) {
+        func.apply(this, args);
         inThrottle = true;
+        setTimeout(() => (inThrottle = false), limit);
       }
-
-      if (now - lastTime >= limit) {
-        lastResult = func.apply(this, args);
-        lastTime = now;
-        inThrottle = false;
-      } else if (trailing) {
-        clearTimeout(inThrottle);
-        inThrottle = setTimeout(() => {
-          if (Date.now() - lastTime >= limit) {
-            lastResult = func.apply(this, args);
-            lastTime = Date.now();
-          }
-        }, limit - (now - lastTime));
-      }
-
-      return lastResult;
     };
   },
 
@@ -161,97 +113,75 @@ window.Utils = {
 
   // 异步工具
   async: {
+    // 简化重试函数
     retry(fn, options = {}) {
-      const { retries = 3, delay = 1000 } = options;
-      let attempt = 0;
-
-      const execute = async () => {
-        try {
-          return await fn();
-        } catch (error) {
-          if (++attempt >= retries) throw error;
-          await new Promise((resolve) => setTimeout(resolve, delay));
-          return execute();
-        }
-      };
-
-      return execute();
-    },
+      const maxRetries = options.maxRetries || 3;
+      const delay = options.delay || 100;
+      
+      return new Promise((resolve, reject) => {
+        const attempt = (retryCount) => {
+          Promise.resolve(fn())
+            .then(resolve)
+            .catch((error) => {
+              if (retryCount < maxRetries) {
+                setTimeout(() => attempt(retryCount + 1), delay * (retryCount + 1));
+              } else {
+                reject(error);
+              }
+            });
+        };
+        
+        attempt(0);
+      });
+    }
   },
 
   // 添加 DOM 相关工具方法
   dom: {
-    // 优化节点基础检查，避免频繁的 DOM 树遍历
-    isValidNode(node) {
-      return (
-        node &&
-        node.parentNode &&
-        // 只在必要时检查 DOM 树
-        (node.ownerDocument === document || document.contains(node))
-      );
-    },
-
-    // 检查是否为文本节点
-    isTextNode(node) {
-      return node?.nodeType === Node.TEXT_NODE;
-    },
-
-    // 统一的节点跳过检查
-    shouldSkipNode(node, config) {
-      if (!node || !node.parentNode) return true;
-      const parent = node.parentElement || node.parentNode;
+    // 只保留核心功能
+    isTextNode: (node) => node?.nodeType === Node.TEXT_NODE,
+    
+    // 简化的节点跳过检查
+    shouldSkipNode: (node, config) => {
+      if (!node) return true;
       
-      // 使用配置中的规则检查元素节点
-      if (node.nodeType === Node.ELEMENT_NODE) {
-        // 使用配置的shouldSkipTag规则
-        if (config.filterRules.shouldSkipTag(node.tagName)) {
-          return true;
-        }
-        
-        // 使用配置的shouldSkipHighlighted规则
-        if (config.filterRules.shouldSkipHighlighted(node, config.className)) {
-          return true;
-        }
-      }
+      // 跳过高亮元素
+      if (node.classList?.contains(config.className)) return true;
+      
+      // 跳过特定标签
+      const skipTags = ['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEXTAREA', 'INPUT'];
+      if (skipTags.includes(node.tagName)) return true;
       
       // 检查父节点
-      return (
-        !parent ||
-        config.filterRules.shouldSkipHighlighted(parent, config.className) ||
-        config.filterRules.shouldSkipTag(parent.tagName) ||
-        !config.filterRules.shouldAllowInput(parent) ||
-        config.filterRules.isEditable(parent)
-      );
+      let parent = node.parentElement;
+      while (parent) {
+        if (parent.classList?.contains(config.className) || 
+            skipTags.includes(parent.tagName)) {
+          return true;
+        }
+        parent = parent.parentElement;
+      }
+      
+      return false;
     },
-
-    // 添加更多常用的 DOM 操作方法
+    
+    // 安全移除节点
     safeRemove(node) {
-      if (node && node.parentNode) {
+      if (node?.parentNode) {
         node.parentNode.removeChild(node);
       }
-    },
+    }
   },
 
-  // 性能优化工具
+  // 性能工具 - 简化并修复递归问题
   performance: {
     debounce(fn, wait) {
-      let timeout;
-      return function (...args) {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => fn.apply(this, args), wait);
-      };
+      return Utils.debounce(fn, wait);
     },
-
+    
     throttle(fn, limit) {
-      let inThrottle;
-      return function (...args) {
-        if (!inThrottle) {
-          fn.apply(this, args);
-          inThrottle = true;
-          setTimeout(() => (inThrottle = false), limit);
-        }
-      };
-    },
+      return Utils.throttle(fn, limit);
+    }
   },
 
   // 添加 LRU 缓存实现

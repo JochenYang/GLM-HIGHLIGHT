@@ -5,12 +5,19 @@ let closeHandler = null;
 // 使用highlighter的实例
 const highlighter = window.highlighter;
 
-// 使用统一配置
-const batchSize = window.HighlighterConfig.performance.batch.size;
-const throttledProcess = Utils.performance.throttle(
-  processNodes,
-  window.HighlighterConfig.performance.throttle.default // 使用默认节流时间
-);
+// 确保highlighter初始化
+function ensureHighlighter() {
+  if (!window.highlighter) {
+    try {
+      window.highlighter = new TextHighlighter();
+      return true;
+    } catch (error) {
+      console.error("创建高亮器失败:", error);
+      return false;
+    }
+  }
+  return true;
+}
 
 // 启动初始化
 if (document.readyState === "loading") {
@@ -19,170 +26,86 @@ if (document.readyState === "loading") {
   initialize();
 }
 
-// 优化的节点处理
+// 简化的节点处理函数
 function processNodes(nodes, options = {}) {
-  if (!nodes.size) return;
+  if (!nodes || !nodes.size) return Promise.resolve(0);
+  
+  if (!ensureHighlighter()) {
+    return Promise.reject(new Error("高亮器未初始化"));
+  }
 
-  let isProcessing = false;
+  try {
+    const startTime = performance.now();
+    let processedCount = 0;
 
-  return Utils.async.retry(async (signal) => {
-    if (isProcessing) return;
-    isProcessing = true;
+    // 直接处理所有节点
+    for (const node of nodes) {
+      if (node instanceof Node && document.contains(node)) {
+        if (isHighlightedText(node)) continue;
 
-    try {
-      const startTime = Date.now();
-      let processed = 0;
-
-      const processBatch = () => {
-        if (signal?.aborted) {
-          return;
-        }
-
-        const end = Math.min(processed + batchSize, nodes.size);
-
-        const processNode = (node) => {
-          if (node instanceof Node && document.contains(node)) {
-            try {
-              // 检查节点是否是新增的内容
-              const isNewContent = !node.classList?.contains(
-                window.highlighter.config.className
-              );
-
-              // 检查节点是否已经被处理过
-              const nodeKey = node.textContent;
-              const isAlreadyProcessed =
-                window.highlighter.nodeStates.has(node);
-
-              // 只处理未处理过的节点或内容已变更的节点
-              if (
-                !isAlreadyProcessed ||
-                node.dataset.lastProcessed !== nodeKey
-              ) {
-                if (window.tabActive && window.keywords?.length) {
-                  if (isNewContent) {
-                    // 对于新内容，直接高亮
-                    window.highlighter.highlight(node, window.keywords);
-                  } else {
-                    // 对于更新的内容，先清理再高亮
-                    window.highlighter.clearHighlight(node);
-                    window.highlighter.highlight(node, window.keywords);
-                  }
-                } else {
-                  // 如果高亮被禁用，只清理已有的高亮
-                  window.highlighter.clearHighlight(node);
-                }
-
-                // 标记节点已处理
-                window.highlighter.nodeStates.set(node, true);
-                // 存储节点内容的哈希值，用于检测变化
-                if (node.dataset) {
-                  node.dataset.lastProcessed = nodeKey;
-                }
-              }
-            } catch (error) {
-              console.warn("处理节点失败:", error);
-            }
-          }
-        };
-
-        // 使用Array.from()创建一次性数组，避免在迭代过程中修改集合
-        const nodesToProcess = Array.from(nodes).slice(processed, end);
-        for (const node of nodesToProcess) {
-          processNode(node);
-          processed++;
-        }
-
-        if (processed < nodes.size) {
-          // 使用requestAnimationFrame确保UI响应性
-          requestAnimationFrame(processBatch);
+        if (window.tabActive && window.keywords?.length) {
+          window.highlighter.highlight(node, window.keywords);
         } else {
-          // 处理完成后记录性能数据
-          const endTime = Date.now();
-          const duration = endTime - startTime;
-          if (duration > 100) {
-            console.debug(`处理了${processed}个节点，耗时${duration}ms`);
-          }
+          window.highlighter.clearHighlight(node);
         }
-      };
-
-      // 使用requestAnimationFrame启动批处理
-      requestAnimationFrame(processBatch);
-
-      return processed;
-    } finally {
-      isProcessing = false;
+        
+        processedCount++;
+      }
     }
-  }, options);
+
+    const duration = performance.now() - startTime;
+    if (processedCount > 10 || duration > 20) {
+      console.debug(`处理了${processedCount}个节点，耗时${duration.toFixed(2)}ms`);
+    }
+
+    return Promise.resolve(processedCount);
+  } catch (error) {
+    console.error("处理节点失败:", error);
+    return Promise.reject(error);
+  }
 }
 
-// 统一的DOM观察器
+// 简化的DOM观察器
 function setupUnifiedObserver() {
   let lastUrl = location.href;
-  let pendingChanges = new Set();
-  let processingTimeout = null;
-
+  
   const mutationObserver = new MutationObserver((mutations) => {
     try {
-      // 1. 检查URL变化
+      // 检查URL变化
       if (location.href !== lastUrl) {
         lastUrl = location.href;
-        // 重置观察器和缓存
         window.highlighter?.clearCache();
-        mutationObserver.disconnect();
-        mutationObserver.observe(document.documentElement, {
-          childList: true,
-          subtree: true,
-          characterData: true,
-          characterDataOldValue: true,
-        });
-
+        
         if (window.tabActive && window.keywords?.length) {
           window.highlighter.highlight(document.body, window.keywords);
         }
         return;
       }
 
-      // 2. 优化节点收集逻辑
+      // 直接收集和处理变更节点
+      const nodesToProcess = new Set();
+
       mutations.forEach((mutation) => {
         if (mutation.type === "childList") {
           mutation.addedNodes.forEach((node) => {
-            if (
-              node.nodeType === Node.ELEMENT_NODE &&
-              !isHighlightedText(node)
-            ) {
-              // 检查节点是否值得处理
-              if (node.textContent?.trim()) {
-                pendingChanges.add(node);
-              }
-            }
-          });
-
-          // 处理被移除的节点相关的缓存清理
-          mutation.removedNodes.forEach((node) => {
-            if (node.nodeType === Node.ELEMENT_NODE) {
-              window.highlighter?.clearCache();
+            if (node.nodeType === Node.ELEMENT_NODE && !isHighlightedText(node)) {
+              nodesToProcess.add(node);
             }
           });
         }
-
+        
         if (mutation.type === "characterData" && mutation.target) {
           const parentElement = mutation.target.parentElement;
           if (parentElement && !isHighlightedText(parentElement)) {
-            pendingChanges.add(parentElement);
+            nodesToProcess.add(parentElement);
           }
         }
       });
 
-      // 3. 使用更短的防抖处理收集到的变更，减少延迟感
-      clearTimeout(processingTimeout);
-      processingTimeout = setTimeout(() => {
-        if (pendingChanges.size > 0) {
-          const nodesToProcess = new Set(pendingChanges);
-          pendingChanges.clear();
-          // 立即处理变更，不等待下一帧
-          processNodes(nodesToProcess, {immediate: true});
-        }
-      }, 10); // 减少到10ms的防抖延迟，大幅减少高亮延迟感
+      // 如果有需要处理的节点，立即处理
+      if (nodesToProcess.size > 0) {
+        processNodes(nodesToProcess);
+      }
     } catch (error) {
       console.error("DOM观察器错误:", error);
     }
@@ -192,20 +115,24 @@ function setupUnifiedObserver() {
     childList: true,
     subtree: true,
     characterData: true,
-    characterDataOldValue: true,
   });
 
   return mutationObserver;
 }
 
-// 初始化函数
+// 初始化函数 - 增强错误恢复能力
 async function initialize(retryCount = 0) {
   try {
-    // 1. 预先设置默认状态
+    // 确保高亮器初始化
+    if (!ensureHighlighter()) {
+      throw new Error("高亮器初始化失败");
+    }
+    
+    // 预先设置默认状态
     window.tabActive = false;
     window.keywords = [];
 
-    // 2. 异步获取状态
+    // 异步获取状态
     const [isActive, keywords] = await Promise.all([
       chrome.runtime.sendMessage({
         opt: "rpc",
@@ -217,39 +144,14 @@ async function initialize(retryCount = 0) {
       }),
     ]);
 
-    // 3. 更新状态
+    // 更新状态
     window.tabActive = isActive;
     window.keywords = keywords || [];
 
-    // 4. 设置观察器和处理可视区域
-    let intersectionObserver;
-    if (window.tabActive && window.keywords?.length) {
-      requestAnimationFrame(() => {
-        // 分批处理可视区域内的节点
-        const visibleNodes = new Set();
-        intersectionObserver = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              visibleNodes.add(entry.target);
-            }
-          });
-        });
-
-        // 优先处理可视区域
-        processNodes(visibleNodes);
-
-        // 然后处理剩余区域
-        window.highlighter.highlight(document.body, window.keywords);
-
-        // 处理完成后断开观察器
-        intersectionObserver.disconnect();
-      });
-    }
-
-    // 5. 设置DOM观察器
+    // 设置DOM观察器
     const mutationObserver = setupUnifiedObserver();
 
-    // 6. 添加页面卸载时的清理
+    // 页面卸载时的清理
     window.addEventListener(
       "unload",
       () => {
@@ -258,38 +160,23 @@ async function initialize(retryCount = 0) {
           dialogElement.remove();
           dialogElement = null;
         }
-        intersectionObserver?.disconnect();
         mutationObserver?.disconnect();
         window.highlighter?.clearCache();
       },
       { once: true }
     );
 
-    // 添加多阶段处理，确保动态内容快速高亮
-    // 第一阶段：立即处理
+    // 直接处理初始内容
     if (window.tabActive && window.keywords?.length) {
+      // 使用requestAnimationFrame确保在浏览器空闲时执行
       requestAnimationFrame(() => {
         window.highlighter.highlight(document.body, window.keywords);
       });
     }
-    
-    // 第二阶段：短延迟处理，捕获初始动态加载内容
-    setTimeout(() => {
-      if (window.tabActive && window.keywords?.length) {
-        window.highlighter.highlight(document.body, window.keywords);
-      }
-    }, 300); // 减少延迟时间，更快响应
-    
-    // 第三阶段：最终检查
-    setTimeout(() => {
-      if (window.tabActive && window.keywords?.length) {
-        window.highlighter.highlight(document.body, window.keywords);
-      }
-    }, 800); // 最终检查，确保所有内容都被处理
   } catch (error) {
-    Utils.handleError(error, "initialize", "RUNTIME");
+    console.error("初始化失败:", error);
     if (retryCount < 3) {
-      setTimeout(() => initialize(retryCount + 1), 100);
+      setTimeout(() => initialize(retryCount + 1), 300 * (retryCount + 1));
     }
   }
 }
@@ -559,5 +446,60 @@ async function handleSelection(e) {
 chrome.runtime.onMessage.addListener((message) => {
   if (message.type === "add-to-category") {
     handleSelection();
+  }
+});
+
+// 在reapplyHighlights处理程序中添加颜色更新支持
+async function reapplyHighlights() {
+  try {
+    // 获取当前分类
+    const response = await chrome.runtime.sendMessage({
+      opt: "rpc", 
+      func: "getKeywordsString2"
+    });
+    
+    if (!response) return;
+    
+    // 标记需要更新颜色
+    response.forEach(category => {
+      if (category && typeof category === 'object') {
+        category._colorUpdated = true;
+      }
+    });
+    
+    // 将分类转换为高亮关键词
+    const keywords = [];
+    response.forEach(category => {
+      if (category.status !== 1) return;
+      
+      const words = (category.data || "").trim().split(/\s+/);
+      words.forEach(word => {
+        if (word) {
+          keywords.push({
+            words: word,
+            colour: category.colour || 1,
+            _colorUpdated: true // 标记需要刷新颜色
+          });
+        }
+      });
+    });
+    
+    // 应用高亮
+    if (keywords.length > 0) {
+      // 强制清除缓存确保颜色正确应用
+      window.highlighter.clearCache();
+      window.highlighter.highlight(document.body, keywords);
+    } else {
+      window.highlighter.clearHighlight(document.body);
+    }
+  } catch (error) {
+    console.error("重新应用高亮失败:", error);
+  }
+}
+
+// 监听配置更新事件
+window.addEventListener('highlighter:config-updated', (e) => {
+  if (e.detail && e.detail.colorChanged) {
+    reapplyHighlights();
   }
 });

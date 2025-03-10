@@ -1613,7 +1613,7 @@ $(function () {
 
       // 添加时间戳防止缓存
       const response = await fetch(
-        "https://gengxin.geluman.cn/version.json?" + Date.now(),
+        "https://gengxin.geluman.cn/update.json?" + Date.now(),
         {
           method: "GET",
           headers: {
