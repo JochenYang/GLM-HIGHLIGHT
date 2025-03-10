@@ -382,17 +382,7 @@ chrome.runtime.onInstalled.addListener(async () => {
     }
 
     // 创建右键菜单
-    chrome.contextMenus.create({
-      id: 'add-to-category',
-      title: '添加到高亮分类',
-      contexts: ['selection']
-    });
-
-    chrome.contextMenus.create({
-      id: 'remove-highlight',
-      title: '删除高亮',
-      contexts: ['selection']
-    });
+    createContextMenus();
 
   } catch (error) {
     console.error('初始化插件失败:', error);
@@ -423,4 +413,40 @@ chrome.commands.onCommand.addListener((command, tab) => {
       type: 'remove-highlight'
     });
   }
+});
+
+// 创建右键菜单
+function createContextMenus() {
+  chrome.contextMenus.removeAll(() => {
+    // 获取国际化文本，如果获取失败则使用默认文本
+    const addToCategoryTitle = chrome.i18n.getMessage("addToCategory") || "添加到高亮分类";
+    const removeHighlightTitle = chrome.i18n.getMessage("removeHighlight") || "删除高亮";
+    
+    chrome.contextMenus.create({
+      id: "add-to-category",
+      title: addToCategoryTitle,
+      contexts: ["selection"],
+    });
+    
+    chrome.contextMenus.create({
+      id: "remove-highlight",
+      title: removeHighlightTitle,
+      contexts: ["selection"],
+    });
+  });
+}
+
+// 在扩展启动时创建菜单
+createContextMenus();
+
+// 监听语言变更
+chrome.i18n.onLocaleChanged && chrome.i18n.onLocaleChanged.addListener(() => {
+  // 重新创建右键菜单以更新文本
+  createContextMenus();
+});
+
+// 监听运行时启动
+chrome.runtime.onStartup.addListener(() => {
+  // 在扩展启动时重新创建菜单
+  createContextMenus();
 });

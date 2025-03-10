@@ -1,0 +1,258 @@
+{
+  "appName": {
+    "message": "GLM Highlighter",
+    "description": "Extension name"
+  },
+  "appDesc": {
+    "message": "Professional webpage text highlighter with multi-category management, custom colors, keyboard shortcuts, context menu, drag-and-drop sorting, import/export and share code features",
+    "description": "Extension description"
+  },
+  "create": {
+    "message": "New",
+    "description": "Create button text"
+  },
+  "manage": {
+    "message": "Manage",
+    "description": "Manage button text"
+  },
+  "deduplicate": {
+    "message": "Dedup",
+    "description": "Deduplicate button text"
+  },
+  "share": {
+    "message": "Share",
+    "description": "Share button text"
+  },
+  "export": {
+    "message": "Export",
+    "description": "Export button text"
+  },
+  "import": {
+    "message": "Import",
+    "description": "Import button text"
+  },
+  "version": {
+    "message": "Ver: $1",
+    "description": "Version label with version number"
+  },
+  "keywordCount": {
+    "message": "Words: $1",
+    "description": "Keyword count label with number"
+  },
+  "checkUpdate": {
+    "message": "Update",
+    "description": "Check update button text"
+  },
+  "helpText": {
+    "message": "Help",
+    "description": "Help button text"
+  },
+  "close": {
+    "message": "Close",
+    "description": "Close button text"
+  },
+  "downloadUpdate": {
+    "message": "Download",
+    "description": "Download update button text"
+  },
+  "addToCategory": {
+    "message": "Add to Highlight Category",
+    "description": "Context menu item to add selected text to highlight category"
+  },
+  "removeHighlight": {
+    "message": "Remove Highlight",
+    "description": "Context menu item to remove highlight from selected text"
+  },
+  "enterCategoryName": {
+    "message": "Enter category name",
+    "description": "Placeholder for category name input"
+  },
+  "enterKeywords": {
+    "message": "Enter keywords, separate with spaces",
+    "description": "Placeholder for keywords textarea"
+  },
+  "shareConfig": {
+    "message": "Share Configuration",
+    "description": "Share dialog title"
+  },
+  "shareCode": {
+    "message": "Share Code",
+    "description": "Share code label"
+  },
+  "importShareCode": {
+    "message": "Import Share Code",
+    "description": "Import share code label"
+  },
+  "enterShareCode": {
+    "message": "Enter share code",
+    "description": "Placeholder for share code input"
+  },
+  "apply": {
+    "message": "Apply",
+    "description": "Apply button text"
+  },
+  "copy": {
+    "message": "Copy",
+    "description": "Copy button text"
+  },
+  "newVersionFound": {
+    "message": "New version found: $1",
+    "description": "New version notification with version number"
+  },
+  "currentVersionLabel": {
+    "message": "Current version: $1",
+    "description": "Current version label with version number"
+  },
+  "updateInfoLabel": {
+    "message": "Update content:",
+    "description": "Update content label"
+  },
+  "updateSteps": {
+    "message": "Update steps:",
+    "description": "Update steps label"
+  },
+  "updateStep1": {
+    "message": "1. Click \"Download Update\" to download the new version",
+    "description": "Update step 1"
+  },
+  "updateStep2": {
+    "message": "2. Extract the downloaded zip file",
+    "description": "Update step 2"
+  },
+  "updateStep3": {
+    "message": "3. Open Chrome extensions page (chrome://extensions/)",
+    "description": "Update step 3"
+  },
+  "updateStep4": {
+    "message": "4. Enable \"Developer mode\"",
+    "description": "Update step 4"
+  },
+  "updateStep5": {
+    "message": "5. Click \"Load unpacked extension\"",
+    "description": "Update step 5"
+  },
+  "updateStep6": {
+    "message": "6. Select the extracted folder to complete the update",
+    "description": "Update step 6"
+  },
+  "copySuccess": {
+    "message": "Share code copied to clipboard",
+    "description": "Message shown when share code is copied"
+  },
+  "copyError": {
+    "message": "Copy failed, please copy manually",
+    "description": "Message shown when copy fails"
+  },
+  "successDedupe": {
+    "message": "Keywords deduplicated successfully",
+    "description": "Message shown when deduplication is successful"
+  },
+  "noDuplicatesFound": {
+    "message": "No duplicate keywords found",
+    "description": "Message shown when no duplicates are found"
+  },
+  "errorDedupe": {
+    "message": "Deduplication failed, please try again",
+    "description": "Message shown when deduplication fails"
+  },
+  "emptyShareCode": {
+    "message": "Please enter a share code",
+    "description": "Message shown when share code input is empty"
+  },
+  "applyShareCodeConfirm": {
+    "message": "Are you sure you want to apply this configuration? It will be merged with your current configuration.",
+    "description": "Confirmation message for applying share code"
+  },
+  "applyShareCodeSuccess": {
+    "message": "Configuration applied successfully!",
+    "description": "Message shown when share code is applied successfully"
+  },
+  "applyShareCodeError": {
+    "message": "Failed to apply configuration, please try again",
+    "description": "Message shown when applying share code fails"
+  },
+  "invalidShareCode": {
+    "message": "Invalid share code, please check and try again",
+    "description": "Message shown when share code is invalid"
+  },
+  "confirmAction": {
+    "message": "Confirm Action",
+    "description": "Title for confirmation dialog"
+  },
+  "cancel": {
+    "message": "Cancel",
+    "description": "Cancel button text"
+  },
+  "confirm": {
+    "message": "Confirm",
+    "description": "Confirm button text"
+  },
+  "importConfirmMessage": {
+    "message": "Are you sure you want to import this configuration? This will replace all your current settings.",
+    "description": "Confirmation message for importing configuration"
+  },
+  "importSuccess": {
+    "message": "Import successful!",
+    "description": "Message shown when import is successful"
+  },
+  "importError": {
+    "message": "Import failed, please check file format",
+    "description": "Message shown when import fails"
+  },
+  "latestVersion": {
+    "message": "You are using the latest version",
+    "description": "Message shown when no update is available"
+  },
+  "checkUpdateError": {
+    "message": "Failed to check for updates, please try again later",
+    "description": "Message shown when checking for updates fails"
+  },
+  "exportError": {
+    "message": "Export failed, please try again",
+    "description": "Message shown when export fails"
+  },
+  "shareError": {
+    "message": "Share failed, please try again",
+    "description": "Message shown when share fails"
+  },
+  "untitledCategory": {
+    "message": "Category $1",
+    "description": "Default name for untitled category"
+  },
+  "noCategories": {
+    "message": "No categories yet, please create one",
+    "description": "Message shown when no categories exist"
+  },
+  "keywordsCount": {
+    "message": "$1 keywords",
+    "description": "Number of keywords in a category"
+  },
+  "deleteCategory": {
+    "message": "Delete",
+    "description": "Delete category button text"
+  },
+  "deleteCategoryConfirm": {
+    "message": "Are you sure you want to delete category \"$1\"? This will remove all keywords in this category.",
+    "description": "Confirmation message for deleting a category"
+  },
+  "deleteConfirmTitle": {
+    "message": "Delete Category",
+    "description": "Title for delete confirmation dialog"
+  },
+  "selectCategory": {
+    "message": "Select Category",
+    "description": "Title of category selection dialog"
+  },
+  "addHighlightSuccess": {
+    "message": "Added to highlight successfully",
+    "description": "Success message for adding highlight"
+  },
+  "addHighlightError": {
+    "message": "Failed to add, please try again",
+    "description": "Error message for adding highlight"
+  },
+  "totalCount": {
+    "message": "Words",
+    "description": "Total word count label"
+  }
+} 

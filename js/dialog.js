@@ -75,12 +75,21 @@ class CategoryDialog {
       
       this.categories = response || [];
       
-      // 渲染分类列表
-      this.list.innerHTML = this.categories.map((cat, i) => `
-        <div class="category-item ${i === 0 ? 'active' : ''}">
-          ${cat.name || `分类 ${i + 1}`}
-        </div>
-      `).join('');
+      // 渲染分类列表，使用国际化支持
+      this.list.innerHTML = this.categories.map((cat, i) => {
+        const categoryName = cat.name || chrome.i18n.getMessage('untitledCategory', `${i + 1}`);
+        return `
+          <div class="category-item ${i === 0 ? 'active' : ''}" data-category-index="${i}">
+            ${categoryName}
+          </div>
+        `;
+      }).join('');
+      
+      // 更新对话框标题
+      const dialogTitle = document.querySelector('[data-i18n="selectCategory"]');
+      if (dialogTitle) {
+        dialogTitle.textContent = chrome.i18n.getMessage('selectCategory', '选择分类');
+      }
       
       this.dialog.style.display = 'block';
       this.selectedIndex = 0;
@@ -151,10 +160,26 @@ class CategoryDialog {
         opt: "event",
         event: "reapplyHighlights"
       });
+
+      // 显示成功提示
+      if (window.parent) {
+        window.parent.postMessage({
+          type: 'show-toast',
+          message: chrome.i18n.getMessage('addHighlightSuccess', '添加高亮成功')
+        }, '*');
+      }
       
       this.close();
     } catch (error) {
       console.error('添加关键词失败:', error);
+      // 显示错误提示
+      if (window.parent) {
+        window.parent.postMessage({
+          type: 'show-toast',
+          message: chrome.i18n.getMessage('addHighlightError', '添加失败，请重试'),
+          type: 'error'
+        }, '*');
+      }
     }
   }
 }

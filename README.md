@@ -1,93 +1,83 @@
 <div align="center">
-  <h2 style="font-size: 1.5em; margin: 1em 0;">
-    <img src="./img/logo.png" alt="GLM-HIGHLIGHT" width="128" />
+  <h1>
+    <img src="img/logo.png" alt="GLM Highlighter" width="128" height="128" />
     <br>
-    Multi-functional Text Highlighter Extension
-    <br>
-    <a href="./docs/README_zh.md" style="font-size: 0.9em; color: #666;">中文文档</a>
-  </h2>
+    GLM Highlighter
+  </h1>
+  <p>Professional webpage text highlighter with multi-category management, custom colors, keyboard shortcuts, context menu, drag-and-drop sorting, import/export and share code features</p>
+  <p>English | <a href="docs/README_zh.md">中文</a></p>
 </div>
 
 [![Version](https://img.shields.io/badge/version-1.0.8-blue.svg)](https://github.com/JochenYang/GLM-HIGHLIGHT/releases)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/JochenYang/GLM-HIGHLIGHT/pulls)
 [![Issues](https://img.shields.io/badge/issues-welcome-orange.svg)](https://github.com/JochenYang/GLM-HIGHLIGHT/issues)
 
-A powerful Chrome extension for webpage text highlighting management. Supporting multi-category, hotkeys, highlight synchronization and more features.
+## Features
 
-## Key Features
+### Multi-Category Highlight Management
+- Create multiple independent highlight categories, each with its own configuration
+- Quickly enable/disable specific categories with toggle switches
+- Intuitive drag-and-drop interface for adjusting category priority and display order
+- Support for adding, editing, and deleting keywords in bulk
 
-- 🎨 Multi-category Highlight Management
+### Highlight Style Customization
+- Multiple preset colors available for different scenarios
+- Set different colors for each category to improve visual recognition
+- Carefully designed highlight styles ensuring readability and aesthetics
 
-  - Support multiple highlight categories
-  - Custom colors for each category
-  - Category renaming and deletion
+### Efficient Operation Methods
+- Quickly add (Alt+Shift+C) or remove (Alt+Shift+D) highlights using keyboard shortcuts
+- Add selected text to highlight categories via right-click menu
+- Automatically process space-separated multiple keywords, with deduplication support
 
-- 🔍 Smart Text Highlighting
+### Data Management & Sharing
+- One-click export to JSON file for backup and migration
+- Generate compact share codes to easily share highlight configurations
+- Transfer configurations between devices via import/export functionality
 
-  - Real-time text highlighting
-  - Support for dynamic content
-  - Optimized performance and memory usage
+## Usage Guide
 
-- ⌨️ Quick Operations
+### Basic Operations
+1. Click the extension icon in the toolbar to open the control panel
+2. Click the "New" button to create a highlight category
+3. Enter category name and keywords (separate multiple keywords with spaces)
+4. Select highlight color and enable highlighting with the toggle switch
+5. While browsing, matching keywords will be automatically highlighted
 
-  - Keyboard shortcuts
-  - Right-click menu operations
-  - One-click highlight clearing
+### Quick Operations
+- Select webpage text and press Alt+Shift+C (MacCtrl+Shift+C on Mac) to add to highlight category
+- Select highlighted text and press Alt+Shift+D (MacCtrl+Shift+D on Mac) to remove highlighting
+- Right-click selected text and choose "Add to Highlight Category" from the menu
+- Drag category cards to adjust display order
 
-- 🔄 Data Synchronization
-
-  - Cross-device settings sync
-  - Import/export configurations
-  - Auto-save highlight states
-
-## Installation
-
-1. Install from Chrome Web Store
-2. Click the extension icon to open control panel
-3. Create highlight categories and set keywords
-4. Select text on webpage, use shortcuts or right-click menu to add highlights
-
-## Keyboard Shortcuts
-
-- `Alt + Shift + C`: Add selected text to highlight category
-- `Alt + Shift + D`: Remove highlight from selected text
-
-## Technical Features
-
-- Developed with Manifest V3
-- DOM observer for dynamic content highlighting
-- Batch processing for performance optimization
-- Secure cross-origin messaging
-- Responsive user interface
-
-## Development Guide
-
-1、Currently, multi-language is not supported, only Chinese is supported
-
-### Project Structure
-
-```
-GLM-HIGHLIGHTER
-├── manifest.json          # Extension configuration
-├── js/
-│   ├── background.js     # Background service
-│   ├── content-action.js # Content script
-│   ├── highlighter.js    # Core highlighting implementation
-│   └── utils.js         # Utility functions
-├── popup/                # Popup window
-└── locales/             # i18n resources
-```
+### Data Management
+- Click "Export" button to backup current configuration
+- Click "Import" button to restore previous configuration
+- Click "Share" to generate a share code that can be copied and shared
+- Click "Dedup" to automatically clean up duplicate keywords
 
 ## Privacy Statement
 
-- Extension only runs on user authorized pages
-- No personal information collection
-- Local data storage with Chrome sync service only
+- Extension only runs on user-authorized webpages
+- All data is stored locally, synchronized only through Chrome sync service
+- Does not collect personal information or browsing history
+- No additional permissions or third-party services required
 
 ## License
 
-MIT License
+This project is licensed under the [Apache License 2.0](LICENSE)
+
+For the full license text, please see the [LICENSE](LICENSE) file.
+
+## Technical Features
+
+- Developed with Manifest V3, compliant with latest Chrome extension standards
+- DOM observer implementation for dynamic content highlighting
+- Optimized Range API implementation for high-performance text processing
+- Comprehensive internationalization support for English and Chinese
+- Carefully designed caching mechanism to reduce resource usage
+- Responsive user interface adapting to different screen sizes
 
 ## Feedback
 
@@ -97,3 +87,59 @@ For issues or suggestions:
 2. Send email to [297390763@qq.com]
 
 For changelog details, please see Releases.
+
+## Localization
+
+This extension supports multiple languages. Currently supported:
+
+- English (default)
+- Chinese (Simplified)
+- (Add more languages as you implement them)
+
+To contribute a new language, add a new folder under `_locales` with the appropriate language code.
+
+```
+                                 Apache License
+                           Version 2.0, January 2004
+
+Copyright (c) 2025 Jochen Yang
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+## Technical Features
+
+- Developed with Manifest V3, compliant with latest Chrome extension standards
+- DOM observer implementation for dynamic content highlighting
+- Optimized Range API implementation for high-performance text processing
+- Comprehensive internationalization support for English and Chinese
+- Carefully designed caching mechanism to reduce resource usage
+- Responsive user interface adapting to different screen sizes
+
+## Feedback
+
+For issues or suggestions:
+
+1. Submit GitHub Issue
+2. Send email to [297390763@qq.com]
+
+For changelog details, please see Releases.
+
+## Localization
+
+This extension supports multiple languages. Currently supported:
+
+- English (default)
+- Chinese (Simplified)
+- (Add more languages as you implement them)
+
+To contribute a new language, add a new folder under `_locales` with the appropriate language code.

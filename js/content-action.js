@@ -26,6 +26,17 @@ if (document.readyState === "loading") {
   initialize();
 }
 
+// 在文件顶部添加i18n辅助函数
+function getTranslation(key, fallback) {
+  if (chrome.i18n && typeof chrome.i18n.getMessage === 'function') {
+    const translated = chrome.i18n.getMessage(key);
+    if (translated) {
+      return translated;
+    }
+  }
+  return fallback || key;
+}
+
 // 简化的节点处理函数
 function processNodes(nodes, options = {}) {
   if (!nodes || !nodes.size) return Promise.resolve(0);
@@ -131,7 +142,14 @@ async function initialize(retryCount = 0) {
     // 预先设置默认状态
     window.tabActive = false;
     window.keywords = [];
-
+    
+    // 注入i18n对象 - 直接使用chrome.i18n
+    window.i18n = {
+      getMessage: function(key, fallback) {
+        return getTranslation(key, fallback);
+      }
+    };
+    
     // 异步获取状态
     const [isActive, keywords] = await Promise.all([
       chrome.runtime.sendMessage({
@@ -165,6 +183,17 @@ async function initialize(retryCount = 0) {
       },
       { once: true }
     );
+
+    // 监听语言变更
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'highlighter_language') {
+        // 更新当前语言
+        const newLang = e.newValue || 'zh_CN';
+        if (window.i18n) {
+          window.i18n.currentLang = newLang;
+        }
+      }
+    });
 
     // 直接处理初始内容
     if (window.tabActive && window.keywords?.length) {
@@ -309,110 +338,111 @@ function isHighlightedText(node) {
 }
 
 // 添加选择文本处理
-async function handleSelection(e) {
+async function handleSelection() {
   try {
-    const text = window.getSelection().toString().trim();
-    if (!text) return;
-
-    // 获取选区位置
+    // 获取选中的文本
     const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+    
+    const text = selection.toString().trim();
+    if (!text) return;
+    
+    // 获取选区位置
     const range = selection.getRangeAt(selection.rangeCount - 1);
     const rect = range.getBoundingClientRect();
-
+    
     // 计算弹窗位置
     const position = {
       x: Math.min(rect.left, window.innerWidth - 320),
       y: Math.min(rect.bottom + window.scrollY, window.innerHeight - 420),
     };
-
+    
     // 获取分类列表
     const categories = await chrome.runtime.sendMessage({
       opt: "rpc",
       func: "getKeywordsString2",
     });
-
+    
     // 如果已存在弹窗则移除
     if (dialogElement) {
       dialogElement.remove();
     }
-
+    
     // 创建弹窗
     dialogElement = document.createElement("div");
     dialogElement.className = "highlight-dialog";
     dialogElement.style.cssText = `
-            position: fixed;
-            left: ${position.x}px;
-            top: ${position.y}px;
-            z-index: 2147483647;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-            padding: 12px;
-            max-width: 300px;
-            width: 100%;
-            max-height: 400px;
-            overflow-y: auto;
-        `;
-
-    // 添加标题
+      position: fixed;
+      left: ${position.x}px;
+      top: ${position.y}px;
+      z-index: 2147483647;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+      padding: 12px;
+      max-width: 300px;
+      width: 100%;
+      max-height: 400px;
+      overflow-y: auto;
+    `;
+    
+    // 添加标题 - 使用chrome.i18n
     const title = document.createElement("div");
     title.style.cssText = `
-            font-size: 14px;
-            color: #606266;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #ebeef5;
-        `;
-    title.textContent = "选择分类";
+      font-size: 14px;
+      color: #606266;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #ebeef5;
+    `;
+    title.textContent = chrome.i18n.getMessage("selectCategory");
     dialogElement.appendChild(title);
-
+    
     // 添加分类列表
     categories.forEach((category) => {
       const item = document.createElement("div");
       item.style.cssText = `
-                display: flex;
-                align-items: center;
-                padding: 8px;
-                cursor: pointer;
-                border-radius: 4px;
-                margin-bottom: 4px;
-                transition: background-color 0.2s;
-            `;
+        display: flex;
+        align-items: center;
+        padding: 8px;
+        cursor: pointer;
+        border-radius: 4px;
+        margin-bottom: 4px;
+        transition: background-color 0.2s;
+      `;
       item.innerHTML = `
-                <div class="chrome-extension-mutihighlight-style-${
-                  category.colour
-                }" 
-                     style="width:16px;height:16px;margin-right:8px;border-radius:2px;">
-                </div>
-                <span style="flex:1;color:#606266;">${
-                  category.name || "未命名分类"
-                }</span>
-            `;
-
+        <div class="chrome-extension-mutihighlight-style-${category.colour}" 
+             style="width:16px;height:16px;margin-right:8px;border-radius:2px;">
+        </div>
+        <span style="flex:1;color:#606266;">${
+          category.name || chrome.i18n.getMessage("untitledCategory")
+        }</span>
+      `;
+      
       // 悬停效果
       item.onmouseover = () => (item.style.backgroundColor = "#f5f7fa");
       item.onmouseout = () => (item.style.backgroundColor = "transparent");
-
+      
       // 点击处理
       item.onclick = async () => {
         try {
           const words = new Set((category.data || "").trim().split(/\s+/));
           words.add(text);
           category.data = Array.from(words).join(" ");
-
+          
           // 更新数据
           await chrome.runtime.sendMessage({
             opt: "rpc",
             func: "setKeywordsString2",
             args: [categories],
           });
-
+          
           // 刷新高亮
           chrome.runtime.sendMessage({
             opt: "event",
             event: "reapplyHighlights",
           });
-
+          
           // 关闭弹窗
           dialogElement.remove();
           dialogElement = null;
@@ -420,13 +450,13 @@ async function handleSelection(e) {
           console.error("添加高亮失败:", error);
         }
       };
-
+      
       dialogElement.appendChild(item);
     });
-
+    
     // 添加到页面
     document.body.appendChild(dialogElement);
-
+    
     // 点击其他区域关闭弹窗
     closeHandler = (e) => {
       if (!dialogElement?.contains(e.target)) {

@@ -1,0 +1,374 @@
+{
+  "appName": {
+    "message": "GLM关键词高亮",
+    "description": "扩展名称"
+  },
+  "appDesc": {
+    "message": "专业网页文本高亮工具，支持多分类管理、自定义颜色、快捷键操作、右键菜单、拖拽排序、导入导出与分享码功能",
+    "description": "扩展描述"
+  },
+  "create": {
+    "message": "新建",
+    "description": "创建按钮文本"
+  },
+  "manage": {
+    "message": "管理",
+    "description": "管理按钮文本"
+  },
+  "deduplicate": {
+    "message": "去重",
+    "description": "去重按钮文本"
+  },
+  "share": {
+    "message": "分享",
+    "description": "分享按钮文本"
+  },
+  "export": {
+    "message": "导出",
+    "description": "导出按钮文本"
+  },
+  "import": {
+    "message": "导入",
+    "description": "导入按钮文本"
+  },
+  "version": {
+    "message": "Ver: $1",
+    "description": "版本号标签"
+  },
+  "keywordCount": {
+    "message": "词数: $1",
+    "description": "关键词数量标签"
+  },
+  "keywordcount": {
+    "message": "词数: $1",
+    "description": "关键词数量标签(小写版本)"
+  },
+  "keywordsCount": {
+    "message": "$1 个关键词",
+    "description": "分类中的关键词数量"
+  },
+  "checkUpdate": {
+    "message": "更新",
+    "description": "检查更新按钮文本"
+  },
+  "helpText": {
+    "message": "帮助",
+    "description": "帮助按钮文本"
+  },
+  "developerBy": {
+    "message": "开发者",
+    "description": "开发者信息文本"
+  },
+  "updateDialogTitle": {
+    "message": "检查更新",
+    "description": "更新对话框标题"
+  },
+  "newVersion": {
+    "message": "发现新版本",
+    "description": "新版本通知"
+  },
+  "currentVersion": {
+    "message": "当前版本",
+    "description": "当前版本标签"
+  },
+  "updateContent": {
+    "message": "更新内容",
+    "description": "更新内容标签"
+  },
+  "updateSteps": {
+    "message": "更新步骤",
+    "description": "更新步骤标签"
+  },
+  "downloadUpdate": {
+    "message": "下载",
+    "description": "下载更新按钮文本"
+  },
+  "close": {
+    "message": "关闭",
+    "description": "关闭按钮文本"
+  },
+  "addCategory": {
+    "message": "添加分类",
+    "description": "添加新分类的按钮"
+  },
+  "categoryName": {
+    "message": "分类名称",
+    "description": "分类名称字段标签"
+  },
+  "keywords": {
+    "message": "关键词",
+    "description": "关键词字段标签"
+  },
+  "save": {
+    "message": "保存",
+    "description": "保存按钮文本"
+  },
+  "cancel": {
+    "message": "取消",
+    "description": "取消按钮文本"
+  },
+  "delete": {
+    "message": "删除",
+    "description": "删除按钮文本"
+  },
+  "edit": {
+    "message": "编辑",
+    "description": "编辑按钮文本"
+  },
+  "on": {
+    "message": "开启",
+    "description": "开关开启状态"
+  },
+  "off": {
+    "message": "关闭",
+    "description": "开关关闭状态"
+  },
+  "selectCategory": {
+    "message": "选择分类",
+    "description": "选择分类对话框标题"
+  },
+  "untitledCategory": {
+    "message": "分类 $1",
+    "description": "未命名分类的默认名称"
+  },
+  "successDedupe": {
+    "message": "关键词去重成功",
+    "description": "去重成功消息"
+  },
+  "errorExport": {
+    "message": "导出数据失败",
+    "description": "导出失败错误消息"
+  },
+  "successExport": {
+    "message": "数据导出成功",
+    "description": "导出成功消息"
+  },
+  "successImport": {
+    "message": "数据导入成功",
+    "description": "导入成功消息"
+  },
+  "errorImport": {
+    "message": "导入数据失败",
+    "description": "导入失败错误消息"
+  },
+  "latestVersion": {
+    "message": "当前已是最新版本",
+    "description": "无可用更新时的消息"
+  },
+  "errorUpdate": {
+    "message": "检查更新失败，请稍后重试",
+    "description": "检查更新失败错误消息"
+  },
+  "addToCategory": {
+    "message": "添加到高亮分类",
+    "description": "右键菜单项，用于将选中文本添加到高亮分类"
+  },
+  "removeHighlight": {
+    "message": "删除高亮",
+    "description": "右键菜单项，用于删除选中文本的高亮"
+  },
+  "enterCategoryName": {
+    "message": "请输入名称",
+    "description": "分类名称输入框的占位文本"
+  },
+  "enterKeywords": {
+    "message": "请输入高亮词，多个以空格隔开",
+    "description": "关键词文本框的占位文本"
+  },
+  "shareConfig": {
+    "message": "分享配置",
+    "description": "分享对话框标题"
+  },
+  "shareCode": {
+    "message": "分享码",
+    "description": "分享码标签"
+  },
+  "importShareCode": {
+    "message": "导入分享码",
+    "description": "导入分享码标签"
+  },
+  "enterShareCode": {
+    "message": "请输入分享码",
+    "description": "分享码输入框的占位符"
+  },
+  "apply": {
+    "message": "应用",
+    "description": "应用按钮文本"
+  },
+  "copy": {
+    "message": "复制",
+    "description": "复制按钮文本"
+  },
+  "newVersionFound": {
+    "message": "发现新版本: $1",
+    "description": "发现新版本通知"
+  },
+  "currentVersionLabel": {
+    "message": "当前版本: $1",
+    "description": "当前版本标签"
+  },
+  "updateInfoLabel": {
+    "message": "更新内容:",
+    "description": "更新内容标签"
+  },
+  "updateStep1": {
+    "message": "1. 点击\"下载更新\"下载新版本",
+    "description": "更新步骤1"
+  },
+  "updateStep2": {
+    "message": "2. 解压下载的zip文件",
+    "description": "更新步骤2"
+  },
+  "updateStep3": {
+    "message": "3. 打开Chrome扩展页面(chrome://extensions/)",
+    "description": "更新步骤3"
+  },
+  "updateStep4": {
+    "message": "4. 启用\"开发者模式\"",
+    "description": "更新步骤4"
+  },
+  "updateStep5": {
+    "message": "5. 点击\"加载已解压的扩展程序\"",
+    "description": "更新步骤5"
+  },
+  "updateStep6": {
+    "message": "6. 选择解压后的文件夹完成更新",
+    "description": "更新步骤6"
+  },
+  "copySuccess": {
+    "message": "分享码已复制到剪贴板",
+    "description": "复制成功提示"
+  },
+  "copyError": {
+    "message": "复制失败，请手动复制",
+    "description": "复制失败提示"
+  },
+  "successDedupe": {
+    "message": "关键词去重成功",
+    "description": "去重成功提示"
+  },
+  "noDuplicatesFound": {
+    "message": "没有发现重复词",
+    "description": "未发现重复词提示"
+  },
+  "errorDedupe": {
+    "message": "去重失败，请重试",
+    "description": "去重失败提示"
+  },
+  "emptyShareCode": {
+    "message": "请输入分享码",
+    "description": "分享码为空提示"
+  },
+  "applyShareCodeConfirm": {
+    "message": "确定要应用这个配置吗？这将与当前配置合并。",
+    "description": "应用分享码确认提示"
+  },
+  "applyShareCodeSuccess": {
+    "message": "配置已成功应用！",
+    "description": "应用分享码成功提示"
+  },
+  "applyShareCodeError": {
+    "message": "应用配置失败，请重试",
+    "description": "应用分享码失败提示"
+  },
+  "invalidShareCode": {
+    "message": "分享码无效，请检查后重试",
+    "description": "分享码无效提示"
+  },
+  "confirmAction": {
+    "message": "确认操作",
+    "description": "确认对话框标题"
+  },
+  "confirm": {
+    "message": "确定",
+    "description": "确认按钮文本"
+  },
+  "importConfirmMessage": {
+    "message": "确定要导入配置吗？这将覆盖当前的所有配置。",
+    "description": "导入配置确认提示"
+  },
+  "importSuccess": {
+    "message": "导入成功！",
+    "description": "导入成功提示"
+  },
+  "importError": {
+    "message": "导入失败，请确保文件格式正确",
+    "description": "导入失败提示"
+  },
+  "latestVersion": {
+    "message": "当前已是最新版本",
+    "description": "当前已是最新版本提示"
+  },
+  "checkUpdateError": {
+    "message": "检查更新失败，请稍后重试",
+    "description": "检查更新失败提示"
+  },
+  "exportError": {
+    "message": "导出失败请重试",
+    "description": "导出失败提示"
+  },
+  "shareError": {
+    "message": "分享失败，请重试",
+    "description": "分享失败提示"
+  },
+  "noCategories": {
+    "message": "暂无分类，请创建",
+    "description": "无分类时显示的提示"
+  },
+  "deleteCategory": {
+    "message": "删除分类",
+    "description": "删除分类按钮文本"
+  },
+  "deleteCategoryConfirm": {
+    "message": "确定要删除分类\"$1\"吗？这将删除该分类下的所有关键词。",
+    "description": "删除分类确认提示"
+  },
+  "deleteConfirmTitle": {
+    "message": "删除分类",
+    "description": "删除确认对话框标题"
+  },
+  "categoryDeleteSuccess": {
+    "message": "分类删除成功",
+    "description": "分类删除成功提示"
+  },
+  "deleteError": {
+    "message": "删除失败，请重试",
+    "description": "删除失败提示"
+  },
+  "noMatchingKeywords": {
+    "message": "没有匹配的关键词",
+    "description": "没有匹配的关键词时显示的提示"
+  },
+  "noKeywords": {
+    "message": "暂无关键词",
+    "description": "无关键词时显示的提示"
+  },
+  "manageHighlights": {
+    "message": "关键词管理",
+    "description": "管理页面标题"
+  },
+  "totalCount": {
+    "message": "总词数",
+    "description": "总词数标签"
+  },
+  "categoryCount": {
+    "message": "分类数",
+    "description": "分类数标签"
+  },
+  "searchKeywords": {
+    "message": "搜索关键词...",
+    "description": "搜索关键词输入框的占位符"
+  },
+  "systemLibrary": {
+    "message": "系统词库",
+    "description": "系统词库标签"
+  },
+  "addHighlightSuccess": {
+    "message": "添加高亮成功",
+    "description": "添加高亮成功提示"
+  },
+  "addHighlightError": {
+    "message": "添加失败，请重试",
+    "description": "添加高亮失败提示"
+  }
+} 

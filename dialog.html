@@ -1,50 +1,56 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="UTF-8">
+  <title data-i18n="selectCategory">选择分类</title>
+  <script src="js/i18n.js"></script>
   <style>
     body {
       margin: 0;
       font-family: -apple-system, system-ui, sans-serif;
       background: transparent;
       width: 100%;
-      overflow: hidden; /* 禁用body滚动 */
+      overflow: hidden;
+      /* 禁用body滚动 */
     }
-    
+
     .category-dialog {
       position: relative;
       background: white;
       border-radius: 8px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
       padding: 16px;
       z-index: 2147483647;
       width: 280px;
       display: none;
     }
-    
+
     .category-list {
       max-height: 300px;
-      overflow-y: auto;  /* 只允许垂直滚动 */
+      overflow-y: auto;
+      /* 只允许垂直滚动 */
       overflow-x: hidden;
-      margin: 0 -16px; /* 抵消父元素padding */
+      margin: 0 -16px;
+      /* 抵消父元素padding */
       padding: 0 16px;
     }
-    
+
     .category-item {
       padding: 8px 16px;
       cursor: pointer;
       border-radius: 4px;
     }
-    
+
     .category-item:hover {
       background: #f5f7fa;
     }
-    
+
     .category-item.active {
       background: #ecf5ff;
       color: #409eff;
     }
-    
+
     .selected-text {
       color: #606266;
       font-size: 13px;
@@ -54,7 +60,7 @@
       margin: 8px 0;
       word-break: break-all;
     }
-    
+
     .close-btn {
       position: absolute;
       top: 8px;
@@ -71,17 +77,17 @@
       border-radius: 4px;
       color: #909399;
     }
-    
+
     .close-btn:hover {
       background: #f5f7fa;
       color: #f56c6c;
     }
-    
+
     .close-btn svg {
       width: 16px;
       height: 16px;
     }
-    
+
     .dialog-header {
       margin: -16px -16px 8px -16px;
       padding: 12px 16px;
@@ -92,19 +98,23 @@
     }
   </style>
 </head>
+
 <body>
   <div class="category-dialog">
     <div class="dialog-header">
-      添加到高亮&分类
-      <button class="close-btn" title="关闭(Esc)">
-        <svg viewBox="0 0 1024 1024">
-          <path fill="currentColor" d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9c-4.4 5.2-.7 13.1 6.1 13.1h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"/>
+      <h2 data-i18n="selectCategory">选择分类</h2>
+      <button class="close-btn" aria-label="Close">
+        <svg viewBox="0 0 24 24">
+          <path
+            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
         </svg>
       </button>
     </div>
+
     <div class="selected-text"></div>
     <div class="category-list"></div>
   </div>
   <script src="js/dialog.js"></script>
 </body>
-</html> 
+
+</html>

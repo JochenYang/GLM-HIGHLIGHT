@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "GLM-Highlight",
+  "name": "__MSG_appName__",
   "version": "1.0.8",
-  "description": "一个强大的网页文本高亮工具，支持多分类高亮、颜色自定义、配置导入导出、分享码功能，让您的阅读体验更加丝滑。",
+  "description": "__MSG_appDesc__",
+  "default_locale": "en",
 
   "icons": {
     "16": "img/icon16.png",
